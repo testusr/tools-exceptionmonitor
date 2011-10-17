@@ -1,0 +1,141 @@
+ ERROR [13.10.11 05:44:19.449] MessageDispatcher . ProcessingException
+    |-| AnyId=ausv6v-a0350-gtpbq26u-cdz | OrderReferenceId=SO-13642970-R1 | ProviderOrderReferenceId=SO-13642970-R1
+    |-| exception=java.lang.reflect.InvocationTargetException
+    |-| callerVM=configservice | nanos=5992342220569010 | threadId=7803 | threadName=MessageDispatcher - CachingCompanyLimitService-ING Vysya-Receiver-thread-1
+      | timestamp=1318484659449 | vm=sep2node2 |-| layer=App | domain=class |-| [SSSOSllSlS]
+java.lang.reflect.InvocationTargetException
+        at sun.reflect.GeneratedMethodAccessor94.invoke(Unknown Source)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher.dispatchToObject(MessageDispatcher.java:406)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher.doExecuteObject(MessageDispatcher.java:294)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher.access$100(MessageDispatcher.java:55)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher$1.run(MessageDispatcher.java:155)
+        at com.three60t.concurrent.executor.v2.RunnableWithTimings.run(RunnableWithTimings.java:81)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+        at java.lang.Thread.run(Thread.java:662)
+Caused by: java.lang.IllegalArgumentException: no cached limit change found for ausv6v-a0350-gtpbq26u-cdz
+        at org.apache.commons.lang.Validate.isTrue(Validate.java:136)
+        at com.three60t.tex.service.sep2.marketdatapool.TradingLimitChangeCache.remove(TradingLimitChangeCache.java:59)
+        at com.three60t.tex.service.sep2.marketdatapool.CachingCompanyLimitService.setCompanyTradingLimitConfig(CachingCompanyLimitService.java:534)
+        at com.three60t.tex.service.sep2.marketdatapool.CachingCompanyLimitService.limitsChanged(CachingCompanyLimitService.java:578)
+        ... 11 more
+
+ERROR [13.10.11 05:44:19.449] MessageDispatcher .ExecutionRunnable.run Error executing command.
+    |-| AnyId=ausv6v-a0350-gtpbq26u-cdz | OrderReferenceId=SO-13642970-R1 | ProviderOrderReferenceId=SO-13642970-R1
+    |-| exception=com.three60t.tex.app.exceptions.processing.ProcessingException: Cannot invoke method in object
+    |-| callerVM=configservice | nanos=5992342220894010 | threadId=7803 | threadName=MessageDispatcher - CachingCompanyLimitService-ING Vysya-Receiver-thread-1
+      | timestamp=1318484659449 | vm=sep2node2 |-| layer=App |-| [SSSOSllSlS]
+com.three60t.tex.app.exceptions.processing.ProcessingException: Cannot invoke method in object
+        at com.three60t.tex.communication.message.handler.MessageDispatcher.dispatchToObject(MessageDispatcher.java:437)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher.doExecuteObject(MessageDispatcher.java:294)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher.access$100(MessageDispatcher.java:55)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher$1.run(MessageDispatcher.java:155)
+        at com.three60t.concurrent.executor.v2.RunnableWithTimings.run(RunnableWithTimings.java:81)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+        at java.lang.Thread.run(Thread.java:662)
+Caused by: java.lang.reflect.InvocationTargetException
+        at sun.reflect.GeneratedMethodAccessor94.invoke(Unknown Source)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher.dispatchToObject(MessageDispatcher.java:406)
+        ... 7 more
+Caused by: java.lang.IllegalArgumentException: no cached limit change found for ausv6v-a0350-gtpbq26u-cdz
+        at org.apache.commons.lang.Validate.isTrue(Validate.java:136)
+        at com.three60t.tex.service.sep2.marketdatapool.TradingLimitChangeCache.remove(TradingLimitChangeCache.java:59)
+        at com.three60t.tex.service.sep2.marketdatapool.CachingCompanyLimitService.setCompanyTradingLimitConfig(CachingCompanyLimitService.java:534)
+        at com.three60t.tex.service.sep2.marketdatapool.CachingCompanyLimitService.limitsChanged(CachingCompanyLimitService.java:578)
+        ... 11 more
+
+FATAL [13.10.11 20:59:55.156] FatalLogger .uncaughtException() The following throwable was not caught anywhere in the thread Thread-44
+    |-|  |-| exception=java.lang.ExceptionInInitializerError
+    |-| nanos=6047277927453010 | threadId=143 | threadName=Thread-44 | timestamp=1318539595156 | vm=sep2node2 |-| layer=App |-| [OllSlS]
+java.lang.ExceptionInInitializerError
+        at org.eclipse.jetty.server.Server.doStop(Server.java:315)
+        at org.eclipse.jetty.util.component.AbstractLifeCycle.stop(AbstractLifeCycle.java:80)
+        at com.three60t.framework.communication.hornetq.server.HornetQHttpContainer$2.run(HornetQHttpContainer.java:137)
+Caused by: java.lang.IllegalStateException: Shutdown in progress
+        at java.lang.ApplicationShutdownHooks.add(ApplicationShutdownHooks.java:39)
+        at java.lang.Runtime.addShutdownHook(Runtime.java:192)
+        at org.eclipse.jetty.util.thread.ShutdownThread.<init>(ShutdownThread.java:48)
+        at org.eclipse.jetty.util.thread.ShutdownThread.<clinit>(ShutdownThread.java:36)
+        ... 3 more
+
+FATAL [12.10.11 00:52:18.170] FatalLogger . ProcessingException
+    |-| StreamRequestId=q29gh8-c0a83a-gtnlr9wa-ng |-| exception=java.lang.reflect.InvocationTargetException
+    |-| callerVM=core | nanos=5888420941782010 | threadId=31 | threadName=MessageDispatcher - ServiceRegistryListener-Receiver-thread-1
+      | timestamp=1318380738170 | vm=sep2node2 |-| layer=App | domain=class |-| [SOSllSlS]
+java.lang.reflect.InvocationTargetException
+        at sun.reflect.GeneratedMethodAccessor168.invoke(Unknown Source)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher.dispatchToObject(MessageDispatcher.java:406)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher.doExecuteObject(MessageDispatcher.java:294)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher.access$100(MessageDispatcher.java:55)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher$1.run(MessageDispatcher.java:155)
+        at com.three60t.tex.communication.message.handler.MessageDispatcher$2.run(MessageDispatcher.java:208)
+        at com.three60t.concurrent.executor.v2.RunnableWithTimings.run(RunnableWithTimings.java:81)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+        at java.lang.Thread.run(Thread.java:662)
+Caused by: java.lang.NoSuchMethodError: com.three60t.api.services.sep2.clientgateway.MarketDataStreamSubscriptionMultiKey.<init>(Ljava/util/Collection;)V
+        at com.three60t.tex.service.sep2.clientgateway.GUIClientGatewayImpl.invalidateClientMarketData(GUIClientGatewayImpl.java:732)
+        at com.three60t.tex.service.sep2.clientgateway.GUIClientGatewayImpl.unsubscribeAllSubscriptions(GUIClientGatewayImpl.java:727)
+        at com.three60t.tex.service.sep2.clientgateway.GUIClientGatewayImpl.cleanup(GUIClientGatewayImpl.java:740)
+        at com.three60t.tex.service.sep2.clientgateway.ActiveGUIClientGateway.cleanup(ActiveGUIClientGateway.java:110)
+        at com.three60t.tex.service.sep2.clientgateway.GuiClientGatewayRegistrationHandler$RegistrationEntry.dispose(GuiClientGatewayRegistrationHandler.java:121)
+        at com.three60t.tex.service.sep2.clientgateway.GuiClientGatewayRegistrationHandler.removeRegistrationEntry(GuiClientGatewayRegistrationHandler.java:176)
+        at com.three60t.tex.service.sep2.clientgateway.GuiClientGatewayRegistrationHandler.deregister(GuiClientGatewayRegistrationHandler.java:167)
+        at com.three60t.tex.service.sep2.clientgateway.ClientGatewayManager.deregister(ClientGatewayManager.java:154)
+        at com.three60t.tex.service.sep2.clientgateway.ClientGatewayManager.notifyStreamClientRemoved(ClientGatewayManager.java:150)
+        at com.three60t.tex.service.sep2.clientgateway.SepGuiClientServiceListener.sepGuiClientServiceRemoved(SepGuiClientServiceListener.java:113)
+        at com.three60t.tex.service.sep2.clientgateway.SepGuiClientServiceListener.serviceRemoved(SepGuiClientServiceListener.java:73)
+        ... 12 more
+
+FATAL [13.10.11 09:37:51.809] FatalLogger .uncaughtException() The following throwable was not caught anywhere in the thread Thread-73000
+    |-|  |-| exception=com.three60t.tex.app.exceptions.processing.ProcessingException: Error processing 'com.three60t.dealexporter.base.translator.deal.TexTradeTranslator$TexTradeTranslatingException'
+    |-| nanos=4032445675567339 | threadId=135244 | threadName=Thread-73000 | timestamp=1318498671809 | vm=tex1 |-| layer=App |-| [OllSlS]
+com.three60t.tex.app.exceptions.processing.ProcessingException: Error processing 'com.three60t.dealexporter.base.translator.deal.TexTradeTranslator$TexTradeTranslatingException'
+        at com.three60t.tex.communication.message.core.GeneralErrorMessage.<init>(GeneralErrorMessage.java:46)
+        at com.three60t.tex.communication.message.core.GeneralErrorMessage.<init>(GeneralErrorMessage.java:59)
+        at com.three60t.tex.communication.message.core.GeneralErrorMessage.<init>(GeneralErrorMessage.java:85)
+        at com.three60t.tex.communication.message.core.GeneralMessageFactory.createMessageWithDecodedContent(GeneralMessageFactory.java:30)
+        at com.three60t.tex.communication.codecs.JavaBusCodec.decode(JavaBusCodec.java:46)
+        at com.three60t.tex.communication.communicator.CommunicatorBase.decodeWithCodecs(CommunicatorBase.java:353)
+        at com.three60t.tex.communication.communicator.CommunicatorBase.decodeMessage(CommunicatorBase.java:341)
+        at com.three60t.tex.communication.communicator.CommunicatorBase.sendRequest(CommunicatorBase.java:461)
+        at com.three60t.tex.communication.message.handler.CommandStub$1.run(CommandStub.java:200)
+        at com.three60t.concurrent.executor.v2.RunnableWithTimings.run(RunnableWithTimings.java:81)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+        at java.lang.Thread.run(Thread.java:662)
+Caused by: java.lang.NoSuchMethodException: com.three60t.dealexporter.base.translator.deal.TexTradeTranslator$TexTradeTranslatingException.<init>(java.lang.String)
+        at java.lang.Class.getConstructor0(Class.java:2706)
+        at java.lang.Class.getConstructor(Class.java:1657)
+        at com.three60t.tex.communication.message.core.GeneralErrorMessage.<init>(GeneralErrorMessage.java:41)
+        ... 12 more
+
+FATAL [13.10.11 14:29:46.453] FatalLogger .uncaughtException() The following throwable was not caught anywhere in the thread Thread-127026
+    |-|  |-| exception=java.lang.RuntimeException: Trade #187536385 already exported successfully.
+    |-| nanos=4049960319603339 | threadId=234181 | threadName=Thread-127026 | timestamp=1318516186453 | vm=tex1 |-| layer=App |-| [OllSlS]
+java.lang.RuntimeException: Trade #187536385 already exported successfully.
+        at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+        at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+        at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+        at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+        at com.three60t.tex.communication.message.core.GeneralErrorMessage.<init>(GeneralErrorMessage.java:41)
+        at com.three60t.tex.communication.message.core.GeneralErrorMessage.<init>(GeneralErrorMessage.java:59)
+        at com.three60t.tex.communication.message.core.GeneralErrorMessage.<init>(GeneralErrorMessage.java:85)
+        at com.three60t.tex.communication.message.core.GeneralMessageFactory.createMessageWithDecodedContent(GeneralMessageFactory.java:30)
+        at com.three60t.tex.communication.codecs.JavaBusCodec.decode(JavaBusCodec.java:46)
+        at com.three60t.tex.communication.communicator.CommunicatorBase.decodeWithCodecs(CommunicatorBase.java:353)
+        at com.three60t.tex.communication.communicator.CommunicatorBase.decodeMessage(CommunicatorBase.java:341)
+        at com.three60t.tex.communication.communicator.CommunicatorBase.sendRequest(CommunicatorBase.java:461)
+        at com.three60t.tex.communication.message.handler.CommandStub$1.run(CommandStub.java:200)
+        at com.three60t.concurrent.executor.v2.RunnableWithTimings.run(RunnableWithTimings.java:81)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+        at java.lang.Thread.run(Thread.java:662)
+
