@@ -39,19 +39,100 @@ public class ExceptionParserTest {
 	public void testExceptionChainCreation() {
 		ExceptionParser exceptionParser = new ExceptionParser();
 		exceptionParser.parse(EXCEPTION_SAMPLE1);
-				
-		List<ExceptionChain> exceptionChains = exceptionParser.getExceptionChains();
-		assertEquals(exceptionChains.size(), 1);
-	}
 
-	public void testExceptionCreation(){
-		ExceptionParser exceptionParser = new ExceptionParser();
-		exceptionParser.parse(EXCEPTION_SAMPLE1);
+		List<ExceptionCausedByChain> exceptionChains = exceptionParser.getExceptionChains();
+		assertEquals(1, exceptionChains.size());
 		
-		List<LoggedException> exceptions = exceptionParser.getExceptions();
+		ExceptionCausedByChain exceptionCausedByChain = exceptionChains.get(0);
+		assertEquals(3, exceptionCausedByChain.getExceptions().size());
+		
+		List<LoggedException> exceptions = exceptionCausedByChain.getExceptions();
 
 		assertEquals(exceptions.get(0).getExceptionClassName(),"com.three60t.tex.app.exceptions.processing.ProcessingException");
 		assertEquals(exceptions.get(1).getExceptionClassName(), "java.lang.reflect.InvocationTargetException");
 		assertEquals(exceptions.get(2).getExceptionClassName(), "java.lang.IllegalArgumentException");
+	}
+
+	@Test
+	public void testExceptionCreation(){
+		ExceptionParser exceptionParser = new ExceptionParser();
+		exceptionParser.parse(EXCEPTION_SAMPLE1);
+		
+		List<LoggedException> loggedExceptions = exceptionParser.getExceptions();
+		assertEquals(3, loggedExceptions.size());
+		assertEquals("com.three60t.tex.app.exceptions.processing.ProcessingException", loggedExceptions.get(0).getExceptionClassName());
+		assertEquals("java.lang.reflect.InvocationTargetException", loggedExceptions.get(1).getExceptionClassName());
+		assertEquals("java.lang.IllegalArgumentException", loggedExceptions.get(2).getExceptionClassName());
+
 	} 
+	
+	@Test
+	public void testFirstLineMarksStartOfExceptionTrace(){
+		String firstLine = "com.three60t.tex.app.exceptions.processing.ProcessingException: Cannot invoke method in object";
+		String secondLine = "at com.three60t.tex.communication.message.handler.MessageDispatcher.dispatchToObject(MessageDispatcher.java:437)";
+		
+		ExceptionParser exceptionParser = new ExceptionParser();
+		assertTrue(exceptionParser.firstLineMarksStartOfExceptionTrace(firstLine, secondLine));
+	}
+	
+	@Test
+	public void testFirstLineIstStartsCausedByExceptionTrace(){
+		String firstLine = "Caused by: java.lang.reflect.InvocationTargetException"; 
+		String secondLine =	"at sun.reflect.GeneratedMethodAccessor94.invoke(Unknown Source)"; 
+
+		ExceptionParser exceptionParser = new ExceptionParser();
+		assertTrue(exceptionParser.firstLineIstStartsCausedByExceptionTrace(firstLine, secondLine));
+	}
+	
+	@Test
+	public void testFirstLineIsPartOfCurrentException(){
+		String firstLine  = "at com.three60t.tex.communication.message.handler.MessageDispatcher.dispatchToObject(MessageDispatcher.java:437)";
+		String secondLine = "at com.three60t.tex.communication.message.handler.MessageDispatcher.doExecuteObject(MessageDispatcher.java:294)";
+	
+		ExceptionParser exceptionParser = new ExceptionParser();
+		assertTrue(exceptionParser.firstLineIsPartOfCurrentException(firstLine, secondLine));
+	}
+	
+	@Test
+	public void testFirstLineIsPartOfCurrentException_firstLineCausedBy(){
+		String firstLine  = "Caused by: java.lang.IllegalArgumentException: no cached limit change found for ausv6v-a0350-gtpbq26u-cdz)";
+		String secondLine = "at com.three60t.tex.communication.message.handler.MessageDispatcher.doExecuteObject(MessageDispatcher.java:294)";
+	
+		ExceptionParser exceptionParser = new ExceptionParser();
+		assertTrue(!exceptionParser.firstLineIsPartOfCurrentException(firstLine, secondLine));
+	}
+	
+	@Test
+	public void testFirstLineMarksEOFExceptionTrace() {
+		String firstLine = "... 11 more";
+		String secondLine = "asdcysxcsdrfwtre325tgrvg";
+		
+		ExceptionParser exceptionParser = new ExceptionParser();
+		assertTrue(exceptionParser.firstLineMarksEOFExceptionTrace(firstLine, secondLine));
+	}
+	
+
+	@Test
+	public void testRegExp_REGEXP_EXCEPTION_START(){
+		//System.out.println(ExceptionParser.REGEXP_EXCEPTION_START);
+		assertTrue(("com.three60t.tex.app.exceptions.processing.ProcessingException: Cannot invoke method in object".matches(ExceptionParser.REGEXP_EXCEPTION_START)));
+	}
+	@Test
+	public void testRegExp_REGEXP_EXCEPTION_START_CAUSED_BY(){
+		//System.out.println(ExceptionParser.REGEXP_EXCEPTION_START_CAUSED_BY);
+		assertTrue(("Caused by: java.lang.IllegalArgumentException: no cached limit change found for ausv6v-a0350-gtpbq26u-cdz".matches(ExceptionParser.REGEXP_EXCEPTION_START_CAUSED_BY)));
+	}
+	
+	@Test
+	public void testRegExp_REGEXP_STACKTRACE_MEMBER_AT(){
+//		System.out.println(ExceptionParser.REGEXP_STACKTRACE_MEMBER_AT);
+		assertTrue(("at com.three60t.tex.communication.message.handler.MessageDispatcher.dispatchToObject(MessageDispatcher.java:437)".matches(ExceptionParser.REGEXP_STACKTRACE_MEMBER_AT)));
+	}
+	
+	@Test
+	public void testRegExp_REGEXP_SOURCE_LINE(){
+		System.out.println(ExceptionParser.REGEXP_SOURCE_LINE_OR_UNKNOWN);
+		assertTrue(("(MessageDispatcher.java:437)".matches(ExceptionParser.REGEXP_SOURCE_LINE_OR_UNKNOWN)));
+		assertTrue(("(Unknown Source)".matches(ExceptionParser.REGEXP_SOURCE_LINE_OR_UNKNOWN)));
+	}
 }

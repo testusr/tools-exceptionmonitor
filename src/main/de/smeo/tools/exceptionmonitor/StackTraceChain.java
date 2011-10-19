@@ -1,5 +1,5 @@
 package de.smeo.tools.exceptionmonitor;
 
-public class ExceptionChain {
+public class StackTraceChain {
 
 }
