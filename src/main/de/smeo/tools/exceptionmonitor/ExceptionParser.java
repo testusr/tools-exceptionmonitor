@@ -21,17 +21,18 @@ public class ExceptionParser {
 	private ExceptionCausedByChain currExceptionCausedByChain = null; 
 	
 	private final static String REGEXP_CAUSED_BY = "Caused by:";
-	private final static String REGEXP_UNKNOWN_SOURCE = "\\(Unknown Source\\)";
+	private final static String REGEXP_TEXT = "\\([A-Za-z ]+\\)"; // i have chosen this as there are unusuals like "(Unknown Source)", "(Native Method)".. there might be more
 	private final static String REGEXP_AT = "at";
 	private final static String REGEXP_CLASSNAME_OR_PATHSEGMENT = "[a-zA-Z_$][a-zA-Z0-9\\d_$]*";
 	private final static String REGEXP_CLASSNAME = "(" + REGEXP_CLASSNAME_OR_PATHSEGMENT+ "\\.)+" + REGEXP_CLASSNAME_OR_PATHSEGMENT;
 	private final static String REGEXP_EXCEPTION_COMMENT = ":.*";
-	protected final static String REGEXP_SOURCE_LINE = "\\([a-zA-Z_$][a-zA-Z\\d_$]*\\.java:[0-9]+\\)";
+	private final static String REGEXP_INIT = "<init>";
+	private final static String REGEXP_SOURCE_LINE = "\\([a-zA-Z_$][a-zA-Z\\d_$]*\\.java:[0-9]+\\)";
 
 	protected final static String REGEXP_EXCEPTION_START = REGEXP_CLASSNAME + "("+REGEXP_EXCEPTION_COMMENT+")?";
 	protected final static String REGEXP_EXCEPTION_START_CAUSED_BY = REGEXP_CAUSED_BY + " " + REGEXP_EXCEPTION_START;
-	protected final static String REGEXP_SOURCE_LINE_OR_UNKNOWN = REGEXP_SOURCE_LINE + "|" + REGEXP_UNKNOWN_SOURCE;
-	protected final static String REGEXP_STACKTRACE_MEMBER_AT = REGEXP_AT + " " + REGEXP_CLASSNAME + "("+REGEXP_SOURCE_LINE_OR_UNKNOWN+")?"; 
+	protected final static String REGEXP_SOURCE_LINE_OR_UNKNOWN = REGEXP_SOURCE_LINE + "|" + REGEXP_TEXT;
+	protected final static String REGEXP_STACKTRACE_MEMBER_AT = REGEXP_AT + " " + REGEXP_CLASSNAME + "(\\."+REGEXP_INIT+"){0,1}" + "("+REGEXP_SOURCE_LINE_OR_UNKNOWN+")?"; 
 	
 	
 	public List<ExceptionCausedByChain> getExceptionChains() {
@@ -77,13 +78,15 @@ public class ExceptionParser {
 			}
 		}
 			
-		return (currLineTrimmed);
+		return currLineTrimmed;
 	}
 
 	private void flush() {
 		moveCurrExceptionToExceptionList();
-		exceptionChains.add(currExceptionCausedByChain);
-		currExceptionCausedByChain = null;
+		if (currExceptionCausedByChain != null){
+			exceptionChains.add(currExceptionCausedByChain);
+			currExceptionCausedByChain = null;
+		}
 	}
 	
 	private static String removeCausedBy(String line) {
@@ -91,8 +94,10 @@ public class ExceptionParser {
 	}
 
 	private void moveCurrExceptionToExceptionList() {
-		collectedExceptions.add(currException);
-		currException = null;
+		if (currException != null){
+			collectedExceptions.add(currException);
+			currException = null;
+		}
 	}
 
 	private static LoggedException createNewException(String exceptionStartLine) {

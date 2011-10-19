@@ -125,13 +125,16 @@ public class ExceptionParserTest {
 	
 	@Test
 	public void testRegExp_REGEXP_STACKTRACE_MEMBER_AT(){
-//		System.out.println(ExceptionParser.REGEXP_STACKTRACE_MEMBER_AT);
+		//System.out.println(ExceptionParser.REGEXP_STACKTRACE_MEMBER_AT);
 		assertTrue(("at com.three60t.tex.communication.message.handler.MessageDispatcher.dispatchToObject(MessageDispatcher.java:437)".matches(ExceptionParser.REGEXP_STACKTRACE_MEMBER_AT)));
+		assertTrue(("at com.three60t.tex.communication.message.core.GeneralErrorMessage.<init>(GeneralErrorMessage.java:46)".matches(ExceptionParser.REGEXP_STACKTRACE_MEMBER_AT)));
+		assertTrue(("at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)".matches(ExceptionParser.REGEXP_STACKTRACE_MEMBER_AT)));
+		assertFalse(("at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Met234hod)".matches(ExceptionParser.REGEXP_STACKTRACE_MEMBER_AT)));
 	}
 	
 	@Test
 	public void testRegExp_REGEXP_SOURCE_LINE(){
-		System.out.println(ExceptionParser.REGEXP_SOURCE_LINE_OR_UNKNOWN);
+		//System.out.println(ExceptionParser.REGEXP_SOURCE_LINE_OR_UNKNOWN);
 		assertTrue(("(MessageDispatcher.java:437)".matches(ExceptionParser.REGEXP_SOURCE_LINE_OR_UNKNOWN)));
 		assertTrue(("(Unknown Source)".matches(ExceptionParser.REGEXP_SOURCE_LINE_OR_UNKNOWN)));
 	}

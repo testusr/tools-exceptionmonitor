@@ -25,4 +25,8 @@ public class ExceptionCausedByChain {
 		return causedByChain;
 	}
 
+	@Override
+	public String toString() {
+		return causedByChain.toString();
+	}
 }
