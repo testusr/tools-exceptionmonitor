@@ -28,7 +28,7 @@ public class ExceptionReport {
 		}
 		
 		public String getFullDescription() {
-			return "Exception[" + name + "]\n" +
+			return "Exception[" + name + "/ count: "+exceptionChain.getExceptionCount()+"]\n" +
 					exceptionChain.toString();
 		}
 		
@@ -73,6 +73,10 @@ public class ExceptionReport {
 		System.out.println("----------------------------------------");
 		System.out.println("Full Description");
 		System.out.println("----------------------------------------");
+		System.out.println("Note: the exception stacktraces present the");
+		System.out.println("first occuring exception, the comments for ");
+		System.out.println("the other listed occurances can be different.");
+		System.out.println("----------------------------------------\n");
 		for (NamedExceptionChain currExceptionChain : namedExceptionChains){
 			System.out.println(currExceptionChain.getFullDescription());
 		}
