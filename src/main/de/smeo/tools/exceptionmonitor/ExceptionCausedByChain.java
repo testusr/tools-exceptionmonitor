@@ -25,8 +25,23 @@ public class ExceptionCausedByChain {
 		return causedByChain;
 	}
 
+	public boolean hasEqualRootCause(ExceptionCausedByChain exceptionCausedByChain) {
+		List<LoggedException> exceptionToCompare = exceptionCausedByChain.getExceptions();
+		if (exceptionToCompare.size() == causedByChain.size()){
+			for (int i=0; i < exceptionToCompare.size(); i++){
+				if (!causedByChain.get(i).hasEqualRootCause(exceptionToCompare.get(i))){
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public String toString() {
 		return causedByChain.toString();
 	}
+
+
 }

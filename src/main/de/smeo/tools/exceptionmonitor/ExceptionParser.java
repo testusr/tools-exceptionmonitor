@@ -43,7 +43,7 @@ public class ExceptionParser {
 		return collectedExceptions;
 	}
 
-	public void parse(String exceptionText) {
+	public ExceptionParser parse(String exceptionText) {
 		String previousLine = null;
 		String[] textSplitToLines = exceptionText.split("\n");
 		
@@ -51,6 +51,7 @@ public class ExceptionParser {
 			previousLine = parseLine(currLine, previousLine);
 		}
 		flush();
+		return this;
 	} 
 
 	private String parseLine(String currLine, String previousLine) {

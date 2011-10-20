@@ -1,5 +1,7 @@
 package de.smeo.tools.exceptionmonitor;
 
+import java.util.List;
+
 public class LoggedException {
 	private ExceptionStackTrace stackTrace = new ExceptionStackTrace();
 	private String exceptionClassName;
@@ -22,9 +24,19 @@ public class LoggedException {
 		this.comment = comment;
 	}
 	
+	public boolean hasEqualRootCause(LoggedException loggedException) {
+		if (loggedException.getExceptionClassName().equals(exceptionClassName)){
+			return stackTrace.hasEqualCharacteristics(loggedException.stackTrace);
+		}
+		return false;
+	}
+	
+	public List<String> getSourcePath() {
+		return stackTrace.getSourcePath();
+	}
+
 	@Override
 	public String toString() {
 		return exceptionClassName;
 	}
-
 }
