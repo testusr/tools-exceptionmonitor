@@ -75,7 +75,7 @@ public class EqualCauseExceptionContainerTest {
 
 	@Test
 	public void testCreation() {
-		List<ExceptionCausedByChain> exceptionCausedByChains = new ExceptionParser().parse(EXCEPTION_SAMPLE).getExceptionChains();
+		List<ExceptionCausedByChain> exceptionCausedByChains = new ExceptionParser().parseAndFlush(EXCEPTION_SAMPLE).getExceptionChains();
 		List<EqualCauseExceptionChainContainer> equalCauseExceptionContainers = EqualCauseExceptionContainerFactory.createEqualCauseContainers(exceptionCausedByChains);
 
 		

@@ -2,6 +2,7 @@ package de.smeo.tools.exceptionmonitor;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
@@ -38,7 +39,7 @@ public class ExceptionParserTest {
 	@Test
 	public void testExceptionChainCreation() {
 		ExceptionParser exceptionParser = new ExceptionParser();
-		exceptionParser.parse(EXCEPTION_SAMPLE1);
+		exceptionParser.parseAndFlush(EXCEPTION_SAMPLE1);
 
 		List<ExceptionCausedByChain> exceptionChains = exceptionParser.getExceptionChains();
 		assertEquals(1, exceptionChains.size());
@@ -56,7 +57,7 @@ public class ExceptionParserTest {
 	@Test
 	public void testExceptionCreation(){
 		ExceptionParser exceptionParser = new ExceptionParser();
-		exceptionParser.parse(EXCEPTION_SAMPLE1);
+		exceptionParser.parseAndFlush(EXCEPTION_SAMPLE1);
 		
 		List<LoggedException> loggedExceptions = exceptionParser.getExceptions();
 		assertEquals(3, loggedExceptions.size());
@@ -137,5 +138,28 @@ public class ExceptionParserTest {
 		//System.out.println(ExceptionParser.REGEXP_SOURCE_LINE_OR_UNKNOWN);
 		assertTrue(("(MessageDispatcher.java:437)".matches(ExceptionParser.REGEXP_SOURCE_LINE_OR_UNKNOWN)));
 		assertTrue(("(Unknown Source)".matches(ExceptionParser.REGEXP_SOURCE_LINE_OR_UNKNOWN)));
+	}
+	
+	@Test
+	public void testFileParsing() throws IOException{
+		String[] expectedExcepionClassNames = {
+				"java.lang.reflect.InvocationTargetException",
+				"com.three60t.tex.app.exceptions.processing.ProcessingException",
+				"java.lang.ExceptionInInitializerError",
+				"java.lang.reflect.InvocationTargetException",
+				"com.three60t.tex.app.exceptions.processing.ProcessingException",
+				"java.lang.RuntimeException"
+		};
+		
+		LogFileExceptionParser logFileExceptionParser = new LogFileExceptionParser();
+		logFileExceptionParser.parseFile("resources/exceptionsamples.txt");
+		
+		List<ExceptionCausedByChain> exceptionChains = logFileExceptionParser.getExceptionChains();
+		assertEquals(6, exceptionChains.size());
+		
+		for (int i = 0; i < expectedExcepionClassNames.length; i++){
+			ExceptionCausedByChain currExceptionChain = exceptionChains.get(i);
+			assertEquals(expectedExcepionClassNames[i], currExceptionChain.getExceptions().get(0).getExceptionClassName());
+		}
 	}
 }

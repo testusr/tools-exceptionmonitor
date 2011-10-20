@@ -1,12 +1,10 @@
 package de.smeo.tools.exceptionmonitor;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
 import org.junit.Test;
-
-import com.sun.xml.internal.bind.v2.runtime.SchemaTypeTransducer;
 
 public class ExceptionStackTraceTest {
 	private final String STACK_TRACE_SAMPLE = "at sun.reflect.GeneratedMethodAccessor80.invoke(Unknown Source)\n" + 

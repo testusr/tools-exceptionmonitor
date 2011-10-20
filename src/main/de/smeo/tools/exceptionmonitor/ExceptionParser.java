@@ -1,9 +1,7 @@
 package de.smeo.tools.exceptionmonitor;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -13,13 +11,6 @@ import java.util.regex.Pattern;
  *
  */
 public class ExceptionParser {
-	private List<LoggedException> collectedExceptions = new ArrayList<LoggedException>();
-	private List<ExceptionCausedByChain> exceptionChains = new ArrayList<ExceptionCausedByChain>();
-	private Set<StackTraceChain> stackTraceChains = new HashSet<StackTraceChain>();
-	
-	private LoggedException currException = null;
-	private ExceptionCausedByChain currExceptionCausedByChain = null; 
-	
 	private final static String REGEXP_CAUSED_BY = "Caused by:";
 	private final static String REGEXP_TEXT = "\\([A-Za-z ]+\\)"; // i have chosen this as there are unusuals like "(Unknown Source)", "(Native Method)".. there might be more
 	private final static String REGEXP_AT = "at";
@@ -33,6 +24,14 @@ public class ExceptionParser {
 	protected final static String REGEXP_EXCEPTION_START_CAUSED_BY = REGEXP_CAUSED_BY + " " + REGEXP_EXCEPTION_START;
 	protected final static String REGEXP_SOURCE_LINE_OR_UNKNOWN = REGEXP_SOURCE_LINE + "|" + REGEXP_TEXT;
 	protected final static String REGEXP_STACKTRACE_MEMBER_AT = REGEXP_AT + " " + REGEXP_CLASSNAME + "(\\."+REGEXP_INIT+"){0,1}" + "("+REGEXP_SOURCE_LINE_OR_UNKNOWN+")?"; 
+
+	private List<LoggedException> collectedExceptions = new ArrayList<LoggedException>();
+	private List<ExceptionCausedByChain> exceptionChains = new ArrayList<ExceptionCausedByChain>();
+	
+	private LoggedException currException = null;
+	private ExceptionCausedByChain currExceptionCausedByChain = null; 
+	private String previousLine = null;
+	
 	
 	
 	public List<ExceptionCausedByChain> getExceptionChains() {
@@ -43,18 +42,21 @@ public class ExceptionParser {
 		return collectedExceptions;
 	}
 
-	public ExceptionParser parse(String exceptionText) {
-		String previousLine = null;
+	public ExceptionParser parseAndFlush(String exceptionText) {
+		parse(exceptionText);
+		flush();
+		return this;
+	}
+
+	public void parse(String exceptionText) {
 		String[] textSplitToLines = exceptionText.split("\n");
 		
 		for (String currLine : textSplitToLines){
-			previousLine = parseLine(currLine, previousLine);
+			parseLine(currLine);
 		}
-		flush();
-		return this;
 	} 
-
-	private String parseLine(String currLine, String previousLine) {
+	
+	protected void parseLine(String currLine) {
 		String currLineTrimmed = currLine.trim();
 		if (previousLine != null){
 			if (firstLineMarksStartOfExceptionTrace(previousLine, currLineTrimmed)){
@@ -79,15 +81,16 @@ public class ExceptionParser {
 			}
 		}
 			
-		return currLineTrimmed;
+		previousLine = currLineTrimmed;
 	}
 
-	private void flush() {
+	public void flush() {
 		moveCurrExceptionToExceptionList();
 		if (currExceptionCausedByChain != null){
 			exceptionChains.add(currExceptionCausedByChain);
 			currExceptionCausedByChain = null;
 		}
+		previousLine = null;
 	}
 	
 	private static String removeCausedBy(String line) {

@@ -175,7 +175,7 @@ public class ExceptionParserDifferentSampleTest {
 		private ExceptionParser exceptionParser = new ExceptionParser();
 		
 		public ExceptionParserFixture(String exceptionSample) {
-			exceptionParser.parse(exceptionSample);
+			exceptionParser.parseAndFlush(exceptionSample);
 		}
 
 		public void verifyExceptionChains(String[] ...chains) {
