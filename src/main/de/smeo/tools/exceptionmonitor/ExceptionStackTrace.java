@@ -29,6 +29,10 @@ public class ExceptionStackTrace {
 		return "";
 	}
 
+	List<String> getLines() {
+		return lines;
+	}
+
 	@Override
 	public String toString() {
 		return lines.toString();

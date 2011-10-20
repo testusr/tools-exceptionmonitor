@@ -37,6 +37,20 @@ public class LoggedException {
 
 	@Override
 	public String toString() {
-		return exceptionClassName;
+		StringBuffer stringBuffer = new StringBuffer();
+		stringBuffer.append(exceptionClassName);
+		if (comment != null){
+		   stringBuffer.append(": ");
+		   stringBuffer.append(comment);
+		}
+  	    
+		stringBuffer.append("\n");
+
+  	    for (String currStackLine : stackTrace.getLines()){
+			stringBuffer.append("\t");
+			stringBuffer.append(currStackLine);
+			stringBuffer.append("\n");
+		}
+		return stringBuffer.toString();
 	}
 }

@@ -25,6 +25,10 @@ public class ExceptionCausedByChain {
 		return causedByChain;
 	}
 
+	public int getExceptionCount() {
+		return causedByChain.size();
+	}
+	
 	public boolean hasEqualRootCause(ExceptionCausedByChain exceptionCausedByChain) {
 		List<LoggedException> exceptionToCompare = exceptionCausedByChain.getExceptions();
 		if (exceptionToCompare.size() == causedByChain.size()){
@@ -40,8 +44,14 @@ public class ExceptionCausedByChain {
 
 	@Override
 	public String toString() {
-		return causedByChain.toString();
+		StringBuffer stringBuffer = new StringBuffer();
+		for (LoggedException currException : causedByChain){
+			stringBuffer.append(currException.toString());
+		}
+		return stringBuffer.toString();
 	}
+
+
 
 
 }

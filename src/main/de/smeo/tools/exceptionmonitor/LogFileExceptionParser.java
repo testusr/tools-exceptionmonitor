@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class LogFileExceptionParser extends ExceptionParser {
 	
-	LogFileExceptionParser parseFile(String logfilename) throws IOException{
+	public LogFileExceptionParser parseFile(String logfilename) throws IOException{
 		BufferedReader reader = new BufferedReader(new FileReader(logfilename));
 				
 		String nextLine = null;
