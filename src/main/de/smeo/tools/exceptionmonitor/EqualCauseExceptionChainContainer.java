@@ -36,5 +36,16 @@ public class EqualCauseExceptionChainContainer {
 		}
 		return sourcePath;
 	}
+	
+	public int size(){
+		return exceptionChains.size()+1;
+	}
 
+	public ExceptionCausedByChain getSampleExceptionChain() {
+		return sampleExceptionChain;
+	}
+
+	public String getFirstExceptionName() {
+		return getSampleExceptionChain().getExceptions().get(0).getExceptionClassName();
+	}
 }

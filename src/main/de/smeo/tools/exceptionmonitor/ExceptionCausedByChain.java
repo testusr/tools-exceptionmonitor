@@ -57,7 +57,9 @@ public class ExceptionCausedByChain {
 		return stringBuffer.toString();
 	}
 
-
+	public int size(){
+		return causedByChain.size();
+	}
 
 
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.smeo.tools.exceptionmonitor.EqualCauseExceptionChainContainer;
+import de.smeo.tools.exceptionmonitor.EqualCauseExceptionContainerFactory;
 import de.smeo.tools.exceptionmonitor.ExceptionCausedByChain;
 import de.smeo.tools.exceptionmonitor.LogFileExceptionParser;
 
@@ -13,10 +15,10 @@ public class ExceptionReport {
 	
 	private class NamedExceptionChain implements Comparable<NamedExceptionChain>{
 		private String name;
-		private ExceptionCausedByChain exceptionChain;
+		private EqualCauseExceptionChainContainer equalCauseExceptionChainContainer;
 
-		public NamedExceptionChain(ExceptionCausedByChain exceptionChain) {
-			this.exceptionChain = exceptionChain;
+		public NamedExceptionChain(EqualCauseExceptionChainContainer exceptionChain) {
+			this.equalCauseExceptionChainContainer = exceptionChain;
 		}
 
 		public void setName(String name) {
@@ -24,16 +26,20 @@ public class ExceptionReport {
 		}
 
 		public String getShortDescription() {
-			return "Exception[" + name + "/ count: "+exceptionChain.getExceptionCount()+"] - " + exceptionChain.getExceptions().get(0).getExceptionClassName();
+			return "Exception[" + name + "/ count: "+equalCauseExceptionChainContainer.size()+"] - " + equalCauseExceptionChainContainer.getFirstExceptionName();
 		}
 		
 		public String getFullDescription() {
-			return "Exception[" + name + "/ count: "+exceptionChain.getExceptionCount()+"]\n" +
-					exceptionChain.toString();
+			return "Exception[" + name + "/ count: "+equalCauseExceptionChainContainer.size()+"]\n" +
+					equalCauseExceptionChainContainer.getSampleExceptionChain().toString();
 		}
 		
 		public int compareTo(NamedExceptionChain o) {
-			return (new Integer(o.exceptionChain.getExceptions().size()).compareTo(exceptionChain.getExceptions().size()));
+			int result = (new Integer(o.equalCauseExceptionChainContainer.size()).compareTo(equalCauseExceptionChainContainer.size()));
+			if (result == 0){
+				(o.equalCauseExceptionChainContainer.getFirstExceptionName()).compareTo(equalCauseExceptionChainContainer.getFirstExceptionName());
+			}
+			return result;
 		}
 	}
 	
@@ -46,8 +52,9 @@ public class ExceptionReport {
 			System.out.println("finished parsing logfile, took "+ (System.currentTimeMillis() - start) +" ms");
 		
 			List<ExceptionCausedByChain> exceptionChains = logFileExceptionParser.getExceptionChains();
-			for (ExceptionCausedByChain currExceptionChain : exceptionChains){
-				namedExceptionChains.add(new NamedExceptionChain(currExceptionChain));
+			List<EqualCauseExceptionChainContainer> equalsCauseExceptionChainContainers = EqualCauseExceptionContainerFactory.createEqualCauseContainers(exceptionChains);
+			for (EqualCauseExceptionChainContainer currEqualCauseExceptionChainContainer : equalsCauseExceptionChainContainers){
+				namedExceptionChains.add(new NamedExceptionChain(currEqualCauseExceptionChainContainer));
 			}
 			
 			sortNamedChainsAndSetNames();

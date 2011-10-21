@@ -40,7 +40,7 @@ public class LoggedException {
 		StringBuffer stringBuffer = new StringBuffer();
 		stringBuffer.append(exceptionClassName);
 		if (comment != null){
-		   stringBuffer.append(": ");
+		   stringBuffer.append(":");
 		   stringBuffer.append(comment);
 		}
   	    
