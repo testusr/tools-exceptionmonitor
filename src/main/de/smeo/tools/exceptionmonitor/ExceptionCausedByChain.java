@@ -10,6 +10,8 @@ import java.util.List;
  *
  */
 public class ExceptionCausedByChain {
+	public final static String REGEXP_CAUSED_BY = "Caused by:";
+
 	private List<LoggedException> causedByChain = new ArrayList<LoggedException>();
 	
 	public ExceptionCausedByChain(LoggedException exception) {
@@ -45,8 +47,12 @@ public class ExceptionCausedByChain {
 	@Override
 	public String toString() {
 		StringBuffer stringBuffer = new StringBuffer();
-		for (LoggedException currException : causedByChain){
-			stringBuffer.append(currException.toString());
+		for (int i=0; i < causedByChain.size(); i++){
+			if (i != 0){
+				stringBuffer.append(ExceptionCausedByChain.REGEXP_CAUSED_BY);
+				stringBuffer.append(" ");
+			}
+			stringBuffer.append(causedByChain.get(i).toString());
 		}
 		return stringBuffer.toString();
 	}

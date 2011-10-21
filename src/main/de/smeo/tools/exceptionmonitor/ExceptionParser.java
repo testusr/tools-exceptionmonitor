@@ -11,20 +11,18 @@ import java.util.regex.Pattern;
  *
  */
 public class ExceptionParser {
-	private final static String REGEXP_CAUSED_BY = "Caused by:";
-	private final static String REGEXP_TEXT = "\\([A-Za-z ]+\\)"; // i have chosen this as there are unusuals like "(Unknown Source)", "(Native Method)".. there might be more
-	private final static String REGEXP_AT = "at";
-	private final static String REGEXP_CLASSNAME_OR_PATHSEGMENT = "[a-zA-Z_$][a-zA-Z0-9\\d_$]*";
-	private final static String REGEXP_CLASSNAME = "(" + REGEXP_CLASSNAME_OR_PATHSEGMENT+ "\\.)+" + REGEXP_CLASSNAME_OR_PATHSEGMENT;
-	private final static String REGEXP_EXCEPTION_COMMENT = ":.*";
-	private final static String REGEXP_INIT = "<init>";
-	private final static String REGEXP_SOURCE_LINE = "\\([a-zA-Z_$][a-zA-Z\\d_$]*\\.java:[0-9]+\\)";
-
-	protected final static String REGEXP_EXCEPTION_START = REGEXP_CLASSNAME + "("+REGEXP_EXCEPTION_COMMENT+")?";
-	protected final static String REGEXP_EXCEPTION_START_CAUSED_BY = REGEXP_CAUSED_BY + " " + REGEXP_EXCEPTION_START;
-	protected final static String REGEXP_SOURCE_LINE_OR_UNKNOWN = REGEXP_SOURCE_LINE + "|" + REGEXP_TEXT;
-	protected final static String REGEXP_STACKTRACE_MEMBER_AT = REGEXP_AT + " " + REGEXP_CLASSNAME + "(\\."+REGEXP_INIT+"){0,1}" + "("+REGEXP_SOURCE_LINE_OR_UNKNOWN+")?"; 
-
+	public final static String REGEXP_TEXT = "\\([A-Za-z ]+\\)"; // i have chosen this as there are unusuals like "(Unknown Source)", "(Native Method)".. there might be more
+	public final static String REGEXP_AT = "at";
+	public final static String REGEXP_CLASSNAME_OR_PATHSEGMENT = "[a-zA-Z_$][a-zA-Z0-9\\d_$]*";
+	public final static String REGEXP_CLASSNAME = "(" + REGEXP_CLASSNAME_OR_PATHSEGMENT + "\\.)+"+ REGEXP_CLASSNAME_OR_PATHSEGMENT;
+	public final static String REGEXP_EXCEPTION_COMMENT = ":.*";
+	public final static String REGEXP_INIT = "<init>";
+	public final static String REGEXP_SOURCE_LINE = "\\([a-zA-Z_$][a-zA-Z\\d_$]*\\.java:[0-9]+\\)";
+	public final static String REGEXP_EXCEPTION_START = REGEXP_CLASSNAME + "(" + REGEXP_EXCEPTION_COMMENT + ")?";
+	public final static String REGEXP_EXCEPTION_START_CAUSED_BY = ExceptionCausedByChain.REGEXP_CAUSED_BY + " " + REGEXP_EXCEPTION_START;
+	public final static String REGEXP_SOURCE_LINE_OR_UNKNOWN = REGEXP_SOURCE_LINE + "|" + REGEXP_TEXT;
+	public final static String REGEXP_STACKTRACE_MEMBER_AT = REGEXP_AT + " " + REGEXP_CLASSNAME + "(\\." + REGEXP_INIT + "){0,1}" + "("	+ REGEXP_SOURCE_LINE_OR_UNKNOWN + ")?";
+	
 	private List<LoggedException> collectedExceptions = new ArrayList<LoggedException>();
 	private List<ExceptionCausedByChain> exceptionChains = new ArrayList<ExceptionCausedByChain>();
 	
@@ -94,7 +92,7 @@ public class ExceptionParser {
 	}
 	
 	private static String removeCausedBy(String line) {
-		return line.replace(REGEXP_CAUSED_BY, "").trim();
+		return line.replace(ExceptionCausedByChain.REGEXP_CAUSED_BY, "").trim();
 	}
 
 	private void moveCurrExceptionToExceptionList() {
