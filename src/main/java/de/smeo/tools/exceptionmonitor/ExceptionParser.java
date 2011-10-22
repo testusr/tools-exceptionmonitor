@@ -163,4 +163,9 @@ public class ExceptionParser {
 		return pattern.matcher(line).matches();
 	}
 
+	public void clean() {
+		this.collectedExceptions.clear();
+		this.exceptionChains.clear();
+	}
+
 }
