@@ -210,13 +210,13 @@ public class TestSingleFileMonitor {
 
 		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
 		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).size());
+		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
 
 		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
 		singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
 
 		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).size());
+		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
 		
 	}
 
@@ -229,7 +229,7 @@ public class TestSingleFileMonitor {
 
 		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
 		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(2, singleFileExceptionReport.getUnkownExceptions().get(0).size());
+		assertEquals(2, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
 		
 		
 	}
@@ -242,13 +242,13 @@ public class TestSingleFileMonitor {
 		
 		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
 		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).size());
+		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
 		
 		singleFileMonitorTestFixture.writeToFile(EXCEPTION3_ROOTCAUSE_2);
 
 		singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
 		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).size());
+		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
 	}
 
 	@Test 
@@ -261,8 +261,8 @@ public class TestSingleFileMonitor {
 		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
 		
 		assertEquals(2, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(1).size());
+		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
+		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(1).occuranceCount());
 	}
 	
 	@Test
@@ -327,10 +327,4 @@ public class TestSingleFileMonitor {
 		
 
 	}
-
-	public String getFilePath() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

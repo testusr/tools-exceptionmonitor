@@ -10,6 +10,75 @@ import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
 
 public class SingleFileMonitor {
+	private long lastFileCheckTime = -1;
+	private ExceptionParser exceptionParser = new ExceptionParser();
+	private MonitoredFile monitoredFile;
+	private SingleFileExceptionReport allDayExceptionReport;
+	private SingleFileExceptionReport exceptionReportSinceLastUpdate;
+	private FileChunkReader fileChunkReader;
+	
+	public SingleFileMonitor(MonitoredFile monitoredFile) {
+		this.monitoredFile = monitoredFile;
+		fileChunkReader = new FileChunkReader();
+
+		allDayExceptionReport = new SingleFileExceptionReport(monitoredFile);
+		exceptionReportSinceLastUpdate = new SingleFileExceptionReport(monitoredFile);
+
+	}
+
+	public synchronized List<ExceptionCausedByChain> checkFile() 
+	{
+		lastFileCheckTime = getCurrTime();
+		exceptionParser.clean();
+		String nextLogFileChunk = null;
+		while ( (nextLogFileChunk = getNextLogFileChunk()) != null){
+			exceptionParser.parse(nextLogFileChunk);
+		}
+		List<EqualCauseExceptionChainContainer> exceptionChains = exceptionParser.getExceptionGroupedByRootCause();
+		
+		allDayExceptionReport.addExceptions(exceptionChains);
+		exceptionReportSinceLastUpdate.addExceptions(exceptionChains);
+		
+		return exceptionParser.getExceptionChains();
+	}
+	
+	protected String getNextLogFileChunk() {
+		return fileChunkReader.getNextChunk();
+	}
+
+	public synchronized void checkFileIfNecessary() {
+		if ((lastFileCheckTime < 0) || (getFileCheckInterval() < 0) || (lastFileCheckTime + getFileCheckInterval()) <= getCurrTime()){
+			checkFile();
+		}
+	}
+	
+	public SingleFileExceptionReport getExceptionsSinceLastUpdateAndReset() {
+		SingleFileExceptionReport exceptionsSinceLastUpdate = this.exceptionReportSinceLastUpdate;
+		this.exceptionReportSinceLastUpdate = new SingleFileExceptionReport(getMonitoredFile());
+		return exceptionsSinceLastUpdate;
+	}
+	
+	public SingleFileExceptionReport getAllDayExceptionReport() {
+		return this.allDayExceptionReport;
+	}
+	
+	private long getFileCheckInterval() {
+		return monitoredFile.getCheckInterval();
+	}
+
+	public long getLastFileCheckTime() {
+		return this.lastFileCheckTime;
+	}
+	
+	public MonitoredFile getMonitoredFile() {
+		return monitoredFile;
+	}
+	
+	protected long getCurrTime() {
+		return System.currentTimeMillis();
+	}
+
+
 	public class FileChunkReader {
 		private int MAX_CHUNK_SIZE = 1024 * 100;
 		private File fileToRead;
@@ -88,67 +157,6 @@ public class SingleFileMonitor {
 			}
 		}
 
-	}
-
-	private long lastFileCheckTime = -1;
-	private ExceptionParser exceptionParser = new ExceptionParser();
-	private MonitoredFile monitoredFile;
-	private SingleFileExceptionReport allDayExceptionReport = new SingleFileExceptionReport();
-	private SingleFileExceptionReport exceptionReportSinceLastUpdate = new SingleFileExceptionReport();
-	private FileChunkReader fileChunkReader;
-	
-	public SingleFileMonitor(MonitoredFile monitoredFile) {
-		this.monitoredFile = monitoredFile;
-		fileChunkReader = new FileChunkReader();
-	}
-
-	public synchronized List<ExceptionCausedByChain> checkFile() 
-	{
-		lastFileCheckTime = getCurrTime();
-		exceptionParser.clean();
-		String nextLogFileChunk = null;
-		while ( (nextLogFileChunk = getNextLogFileChunk()) != null){
-			exceptionParser.parse(nextLogFileChunk);
-		}
-		List<EqualCauseExceptionChainContainer> exceptionChains = exceptionParser.getExceptionGroupedByRootCause();
-		
-		allDayExceptionReport.addExceptions(exceptionChains);
-		exceptionReportSinceLastUpdate.addExceptions(exceptionChains);
-		
-		return exceptionParser.getExceptionChains();
-	}
-	
-	protected String getNextLogFileChunk() {
-		return fileChunkReader.getNextChunk();
-	}
-
-	public synchronized void checkFileIfNecessary() {
-		if ((lastFileCheckTime < 0) || (getFileCheckInterval() < 0) || (lastFileCheckTime + getFileCheckInterval()) <= getCurrTime()){
-			checkFile();
-		}
-	}
-	
-	public SingleFileExceptionReport getExceptionsSinceLastUpdateAndReset() {
-		SingleFileExceptionReport exceptionsSinceLastUpdate = this.exceptionReportSinceLastUpdate;
-		this.exceptionReportSinceLastUpdate = new SingleFileExceptionReport();
-		return exceptionsSinceLastUpdate;
-	}
-	
-	
-	private long getFileCheckInterval() {
-		return monitoredFile.getCheckInterval();
-	}
-
-	public long getLastFileCheckTime() {
-		return this.lastFileCheckTime;
-	}
-	
-	public MonitoredFile getMonitoredFile() {
-		return monitoredFile;
-	}
-	
-	protected long getCurrTime() {
-		return System.currentTimeMillis();
 	}
 	
 }

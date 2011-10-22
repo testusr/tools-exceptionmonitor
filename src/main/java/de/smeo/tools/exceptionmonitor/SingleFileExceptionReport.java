@@ -1,5 +1,5 @@
 package de.smeo.tools.exceptionmonitor;
-
+ 
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,28 +7,33 @@ import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainCo
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 
 public class SingleFileExceptionReport {
-	public List<EqualCauseExceptionChainContainer> reportedExceptionsGroupedByRootCause = new ArrayList<EqualCauseExceptionChainContainer>();
-	public List<EqualCauseExceptionChainContainer> sightedExceptionsGroupedByRootCause;
-	public List<EqualCauseExceptionChainContainer> unsightedExceptionsGroupedByRootCause;
-	public List<EqualCauseExceptionChainContainer> unkownExceptionsGroupedByRootCause;
+	private final MonitoredFile monitoredFile;
+	private List<EqualCauseExceptionChainContainer> reportedExceptionsGroupedByRootCause = new ArrayList<EqualCauseExceptionChainContainer>();
+	private List<ReportedExceptionOccurances> sightedExceptionsGroupedByRootCause;
+	private List<ReportedExceptionOccurances> unsightedExceptionsGroupedByRootCause;
+	private List<ReportedExceptionOccurances> unkownExceptionsGroupedByRootCause;
 	
+	public SingleFileExceptionReport(MonitoredFile monitoredFile) {
+		this.monitoredFile = monitoredFile;
+	}
+
 	public List<ReportedException> separateSightedUnsightedAndReturnUnkownExceptions(List<ReportedException> alreadyReportedExceptions){
-		sightedExceptionsGroupedByRootCause = new ArrayList<EqualCauseExceptionChainContainer>();
-		unsightedExceptionsGroupedByRootCause = new ArrayList<EqualCauseExceptionChainContainer>();
-		unkownExceptionsGroupedByRootCause = new ArrayList<EqualCauseExceptionChainContainer>();
+		sightedExceptionsGroupedByRootCause = new ArrayList<ReportedExceptionOccurances>();
+		unsightedExceptionsGroupedByRootCause = new ArrayList<ReportedExceptionOccurances>();
+		unkownExceptionsGroupedByRootCause = new ArrayList<ReportedExceptionOccurances>();
 		
 		List<ReportedException> unknownExceptions = new ArrayList<ReportedException>();
 		for (EqualCauseExceptionChainContainer currExceptionContainer : reportedExceptionsGroupedByRootCause){
 			ReportedException reportedException = getReportedExceptionForContainer(currExceptionContainer, alreadyReportedExceptions);
 				if (reportedException != null){
 					if (reportedException.isWasSighted()){
-						sightedExceptionsGroupedByRootCause.add(currExceptionContainer);
+						sightedExceptionsGroupedByRootCause.add(new ReportedExceptionOccurances(reportedException, currExceptionContainer));
 					} else {
-						unsightedExceptionsGroupedByRootCause.add(currExceptionContainer);
+						unsightedExceptionsGroupedByRootCause.add(new ReportedExceptionOccurances(reportedException, currExceptionContainer));
 					}
 				} else {
-					unkownExceptionsGroupedByRootCause.add(currExceptionContainer);
-					unknownExceptions.add(new ReportedException(currExceptionContainer.getSampleExceptionChain()));
+					ReportedException newReportedException = new ReportedException(currExceptionContainer.getSampleExceptionChain());
+					unkownExceptionsGroupedByRootCause.add(new ReportedExceptionOccurances(newReportedException, currExceptionContainer));
 				}
 		}
 		return unknownExceptions;
@@ -43,15 +48,15 @@ public class SingleFileExceptionReport {
 		}
 		return null;
 	}
-	public List<EqualCauseExceptionChainContainer> getUnSightedExceptions() {
+	public List<ReportedExceptionOccurances> getUnSightedExceptions() {
 		return unsightedExceptionsGroupedByRootCause;
 	}
 
-	public List<EqualCauseExceptionChainContainer> getSightedExceptions() {
+	public List<ReportedExceptionOccurances> getSightedExceptions() {
 		return sightedExceptionsGroupedByRootCause;
 	}
 	
-	public List<EqualCauseExceptionChainContainer> getUnkownExceptions() {
+	public List<ReportedExceptionOccurances> getUnkownExceptions() {
 		return unkownExceptionsGroupedByRootCause;
 	}
 
@@ -75,6 +80,24 @@ public class SingleFileExceptionReport {
 			}
 		}
 		return null;
+	}
+	
+	public static class ReportedExceptionOccurances {
+		private final ReportedException reportedException;
+		private final EqualCauseExceptionChainContainer occurances;
+	
+		public ReportedExceptionOccurances(ReportedException reportedException,
+				EqualCauseExceptionChainContainer occurances) {
+			super();
+			this.reportedException = reportedException;
+			this.occurances = occurances;
+		}
+
+		public int occuranceCount() {
+			return occurances.size();
+		}
+		
+		
 	}
 
 }
