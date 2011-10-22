@@ -3,10 +3,17 @@ package de.smeo.tools.exceptionmonitor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 
@@ -147,6 +154,17 @@ public class TestSingleFileMonitor {
 	
 	private final long checkIntervalInMs = 5000;
 
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
+	private static AtomicInteger tempLogFileCounter = new AtomicInteger(0);
+
+	private File createTempFile(){
+		try {
+			return  tempFolder.newFile("tempFilename_" + this.getClass().getSimpleName() + "_" + tempLogFileCounter.getAndIncrement() + ".log");
+		} catch (IOException e) {
+			return null;
+		}
+	}
 	
 	@Test
 	public void testRunCheckIfNecessary() {
@@ -170,7 +188,7 @@ public class TestSingleFileMonitor {
 	}
 	
 	@Test
-	public void testReadingExceptionWithinTwoFileChecks(){
+	public void testReadingExceptionWithinTwoFileChecks() throws IOException{
 		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(checkIntervalInMs);
 
 		singleFileMonitorTestFixture.writeToFile(ONE_AND_A_HALF_EXCEPTIONS);
@@ -185,7 +203,7 @@ public class TestSingleFileMonitor {
 	}
 	
 	@Test
-	public void testTwoExceptionsWithSameRootCauseInTwoFileChecks(){
+	public void testTwoExceptionsWithSameRootCauseInTwoFileChecks() throws IOException{
 		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
 
 		singleFileMonitorTestFixture.writeToFile(EXCEPTION1_ROOTCAUSE_1);
@@ -203,7 +221,7 @@ public class TestSingleFileMonitor {
 	}
 
 	@Test
-	public void testTwoExceptionsWithSameRootCauseInOneFileCheck(){
+	public void testTwoExceptionsWithSameRootCauseInOneFileCheck() throws IOException{
 		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
 
 		singleFileMonitorTestFixture.writeToFile(EXCEPTION1_ROOTCAUSE_1);
@@ -217,7 +235,7 @@ public class TestSingleFileMonitor {
 	}
 
 	@Test 
-	public void testTwoExceptionsWithDifferentRootCauseInTwoFileChecks(){
+	public void testTwoExceptionsWithDifferentRootCauseInTwoFileChecks() throws IOException{
 		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
 
 		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
@@ -234,7 +252,7 @@ public class TestSingleFileMonitor {
 	}
 
 	@Test 
-	public void testTwoExceptionsWithDifferentRootCauseInOneFileChecks(){
+	public void testTwoExceptionsWithDifferentRootCauseInOneFileChecks() throws IOException{
 		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
 
 		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
@@ -246,24 +264,51 @@ public class TestSingleFileMonitor {
 		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).size());
 		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(1).size());
 	}
+	
+	@Test
+	public void testGetNextLogFileChunk() throws IOException{
+		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(0);
+		
+		StringBuffer srcStringBuffer = new StringBuffer();
+		StringBuffer destStringBuffer = new StringBuffer();
+		
+		for (int i=0; i < 20; i++){
+			srcStringBuffer.append(EXCEPTION1_ROOTCAUSE_1);
+		}
+		srcStringBuffer.append("\n\n\n");
+		
+		singleFileMonitorTestFixture.writeToFile(srcStringBuffer.toString());
+		
+		String fileChunk = null;
+		while ((fileChunk = singleFileMonitorTestFixture.getNextLogFileChunk()) != null){
+			destStringBuffer.append(fileChunk);
+		}
+		
+		assertEquals(srcStringBuffer.toString(), destStringBuffer.toString());
+		
+	}
 
 	private class SingleFileMonitorTestFixture extends SingleFileMonitor {
-		private long time = System.currentTimeMillis();
-		private StringBuffer unreadFileContent = new StringBuffer();
 		
+		private long time = System.currentTimeMillis();
 		
 		public SingleFileMonitorTestFixture(long checkIntervalInMs) {
-			super(new MonitoredFile(checkIntervalInMs, "dummy.log"));
+			super(new MonitoredFile(checkIntervalInMs, createTempFile().getAbsolutePath()));
 		}
 
-		public void writeToFile(String logFileContent) {
-			unreadFileContent.append(logFileContent);
-		}
+		public void writeToFile(String logFileContent) throws IOException {
+	        BufferedWriter out;
+			out = new BufferedWriter(new FileWriter(getMonitoredFile().getFilename(), true));
+	        out.write(logFileContent);
+	        out.close();
 
-		public void setTime(long time) {
-			this.time = time;
 		}
 		
+		@Override
+		public String getNextLogFileChunk() {
+			return super.getNextLogFileChunk();
+		}
+
 		private SingleFileExceptionReport getExecutionReportAndSeparateExceptions() {
 			checkFileIfNecessary();
 			SingleFileExceptionReport singleFileExceptionReport = getExceptionsSinceLastUpdateAndReset();
@@ -271,15 +316,8 @@ public class TestSingleFileMonitor {
 			return singleFileExceptionReport;
 		}
 		
-		@Override
-		protected String getNextLogFileChunk() {
-			if (unreadFileContent.length() == 0){
-				return null;
-		}						
-
-			StringBuffer nextUnreadChunk = unreadFileContent;
-			unreadFileContent = new StringBuffer();
-			return nextUnreadChunk.toString();
+		public void setTime(long time) {
+			this.time = time;
 		}
 		
 		@Override
@@ -288,6 +326,11 @@ public class TestSingleFileMonitor {
 		}
 		
 
+	}
+
+	public String getFilePath() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
