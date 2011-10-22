@@ -14,14 +14,20 @@ public class EqualCauseExceptionChainContainer {
 	
 	public EqualCauseExceptionChainContainer(ExceptionCausedByChain sampleExceptionChain) {
 		this.sampleExceptionChain = sampleExceptionChain;
+		exceptionChains.add(sampleExceptionChain);
 	}
 	
 	public boolean addExceptionIfHasEqualRootCause(ExceptionCausedByChain exceptionCausedByChain) {
-		if (sampleExceptionChain.hasEqualRootCause(exceptionCausedByChain)){
+		if (hasEqualRootCause(exceptionCausedByChain)){
 			exceptionChains.add(exceptionCausedByChain);
 			return true;
 		}
 		return false;
+	}
+
+	public boolean hasEqualRootCause(
+			ExceptionCausedByChain exceptionCausedByChain) {
+		return sampleExceptionChain.hasEqualRootCause(exceptionCausedByChain);
 	}
 	
 	public List<ExceptionCausedByChain> getExceptionChains() {
@@ -38,7 +44,7 @@ public class EqualCauseExceptionChainContainer {
 	}
 	
 	public int size(){
-		return exceptionChains.size()+1;
+		return exceptionChains.size();
 	}
 
 	public ExceptionCausedByChain getSampleExceptionChain() {

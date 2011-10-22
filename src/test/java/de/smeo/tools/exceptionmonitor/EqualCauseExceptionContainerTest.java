@@ -143,7 +143,7 @@ public class EqualCauseExceptionContainerTest {
 
 		
 		assertEquals(1, equalCauseExceptionContainers.size());
-		assertEquals(2, equalCauseExceptionContainers.get(0).getExceptionChains().size());
+		assertEquals(3, equalCauseExceptionContainers.get(0).getExceptionChains().size());
 		
 		assertExcpetionCauseSourceChain(new String[]{
 				"MessageDispatcher.java:437",

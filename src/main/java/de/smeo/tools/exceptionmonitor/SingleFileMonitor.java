@@ -5,9 +5,15 @@ import java.util.List;
 public class SingleFileMonitor {
 	private long lastFileCheckTime = -1;
 	private ExceptionParser exceptionParser = new ExceptionParser();
-	private long fileCheckIntervalMs = -1;
+	private MonitoredFile monitoredFile;
+	private SingleFileExceptionReport allDayExceptionReport = new SingleFileExceptionReport();
+	private SingleFileExceptionReport exceptionReportSinceLastUpdate = new SingleFileExceptionReport();
+	
+	public SingleFileMonitor(MonitoredFile monitoredFile) {
+		this.monitoredFile = monitoredFile;
+	}
 
-	public List<ExceptionCausedByChain> checkFile() 
+	public synchronized List<ExceptionCausedByChain> checkFile() 
 	{
 		lastFileCheckTime = getCurrTime();
 		exceptionParser.clean();
@@ -15,6 +21,10 @@ public class SingleFileMonitor {
 		while ( (nextLogFileChunk = getNextLogFileChunk()) != null){
 			exceptionParser.parse(nextLogFileChunk);
 		}
+		List<EqualCauseExceptionChainContainer> exceptionChains = exceptionParser.getExceptionGroupedByRootCause();
+		
+		allDayExceptionReport.addExceptions(exceptionChains);
+		exceptionReportSinceLastUpdate.addExceptions(exceptionChains);
 		
 		return exceptionParser.getExceptionChains();
 	}
@@ -23,18 +33,21 @@ public class SingleFileMonitor {
 		return null;
 	}
 
-	public void checkFileIfNecessary() {
-		if (lastFileCheckTime < 0 || (lastFileCheckTime + getFileCheckInterval()) <= getCurrTime()){
+	public synchronized void checkFileIfNecessary() {
+		if ((lastFileCheckTime < 0) || (getFileCheckInterval() < 0) || (lastFileCheckTime + getFileCheckInterval()) <= getCurrTime()){
 			checkFile();
 		}
 	}
 	
-	public void setFileCheckIntervalMs(long fileCheckIntervalMs) {
-		this.fileCheckIntervalMs = fileCheckIntervalMs;
+	public SingleFileExceptionReport getExceptionsSinceLastUpdateAndReset() {
+		SingleFileExceptionReport exceptionsSinceLastUpdate = this.exceptionReportSinceLastUpdate;
+		this.exceptionReportSinceLastUpdate = new SingleFileExceptionReport();
+		return exceptionsSinceLastUpdate;
 	}
-
+	
+	
 	private long getFileCheckInterval() {
-		return fileCheckIntervalMs;
+		return monitoredFile.getCheckInterval();
 	}
 
 	public long getLastFileCheckTime() {
@@ -44,6 +57,5 @@ public class SingleFileMonitor {
 	protected long getCurrTime() {
 		return System.currentTimeMillis();
 	}
-	
 	
 }

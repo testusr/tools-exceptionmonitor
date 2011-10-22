@@ -31,7 +31,9 @@ public class ExceptionParser {
 	private String previousLine = null;
 	
 	
-	
+	public List<EqualCauseExceptionChainContainer> getExceptionGroupedByRootCause(){
+		return EqualCauseExceptionContainerFactory.createEqualCauseContainers(getExceptionChains());
+	}
 	public List<ExceptionCausedByChain> getExceptionChains() {
 		return exceptionChains;
 	}
