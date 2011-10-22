@@ -1,7 +1,8 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.exceptionparser;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Exception chain is representing exceptions leasing to exceptions, marked by the 

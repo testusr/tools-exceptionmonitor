@@ -1,8 +1,13 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.exceptionparser;
 
 import java.util.List;
 
 import org.junit.Test;
+
+import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
+import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionContainerFactory;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
 import static org.junit.Assert.assertEquals;
 
 public class EqualCauseExceptionContainerTest {

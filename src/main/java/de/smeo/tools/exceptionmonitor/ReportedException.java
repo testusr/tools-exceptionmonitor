@@ -2,6 +2,8 @@ package de.smeo.tools.exceptionmonitor;
 
 import java.util.List;
 
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+
 public class ReportedException {
 	private boolean wasSighted = false;
 	private boolean wasFixed = false;

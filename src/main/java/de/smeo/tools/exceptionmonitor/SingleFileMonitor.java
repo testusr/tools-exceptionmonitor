@@ -2,6 +2,10 @@ package de.smeo.tools.exceptionmonitor;
 
 import java.util.List;
 
+import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
+
 public class SingleFileMonitor {
 	private long lastFileCheckTime = -1;
 	private ExceptionParser exceptionParser = new ExceptionParser();

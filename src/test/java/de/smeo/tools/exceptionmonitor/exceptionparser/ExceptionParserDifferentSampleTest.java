@@ -1,10 +1,14 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.exceptionparser;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
 import org.junit.Test;
+
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
+import de.smeo.tools.exceptionmonitor.exceptionparser.LoggedException;
 
 public class ExceptionParserDifferentSampleTest {
 	private final String BIG_SAMPLE = 

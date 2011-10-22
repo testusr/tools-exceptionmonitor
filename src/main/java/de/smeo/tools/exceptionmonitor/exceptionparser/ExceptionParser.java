@@ -1,8 +1,9 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.exceptionparser;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
 
 /**
  * Is parsing a text file or a string and extracts the java exceptions with its stack traces.

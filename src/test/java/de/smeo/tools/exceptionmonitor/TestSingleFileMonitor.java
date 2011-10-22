@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+
 
 public class TestSingleFileMonitor {
 	private static String EXCEPTION1_ROOTCAUSE_1 = "java.lang.reflect.InvocationTargetException\n" + 

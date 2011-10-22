@@ -1,8 +1,9 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.exceptionparser;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+
 
 public class LogFileExceptionParser extends ExceptionParser {
 	

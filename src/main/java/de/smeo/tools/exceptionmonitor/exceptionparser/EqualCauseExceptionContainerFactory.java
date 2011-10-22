@@ -1,7 +1,8 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.exceptionparser;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class EqualCauseExceptionContainerFactory {
 	

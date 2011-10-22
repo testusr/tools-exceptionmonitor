@@ -3,6 +3,9 @@ package de.smeo.tools.exceptionmonitor;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+
 public class SingleFileExceptionReport {
 	public List<EqualCauseExceptionChainContainer> reportedExceptionsGroupedByRootCause = new ArrayList<EqualCauseExceptionChainContainer>();
 	public List<EqualCauseExceptionChainContainer> sightedExceptionsGroupedByRootCause;

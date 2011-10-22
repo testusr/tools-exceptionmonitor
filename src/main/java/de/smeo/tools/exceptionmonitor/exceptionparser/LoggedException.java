@@ -1,6 +1,7 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.exceptionparser;
 
 import java.util.List;
+
 
 public class LoggedException {
 	private ExceptionStackTrace stackTrace = new ExceptionStackTrace();

@@ -1,4 +1,4 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.exceptionparser;
 
 import static org.junit.Assert.*;
 
@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
+
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
+import de.smeo.tools.exceptionmonitor.exceptionparser.LogFileExceptionParser;
+import de.smeo.tools.exceptionmonitor.exceptionparser.LoggedException;
 
 public class ExceptionParserTest {
 	private static final String EXCEPTION_SAMPLE1 = "" +

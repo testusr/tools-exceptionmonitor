@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.smeo.tools.exceptionmonitor.EqualCauseExceptionChainContainer;
-import de.smeo.tools.exceptionmonitor.EqualCauseExceptionContainerFactory;
-import de.smeo.tools.exceptionmonitor.ExceptionCausedByChain;
-import de.smeo.tools.exceptionmonitor.LogFileExceptionParser;
+import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
+import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionContainerFactory;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.LogFileExceptionParser;
 
 public class ExceptionReport {
 	List<NamedExceptionChain> namedExceptionChains = new ArrayList<ExceptionReport.NamedExceptionChain>();
