@@ -1,9 +1,9 @@
 package de.smeo.tools.exceptionmonitor;
-
+Quell
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileMonitor {
+public class MultiFileMonitor {
 	private List<SingleFileMonitor> singleFileMonitors = new ArrayList<SingleFileMonitor>();
 	
 	public void addMonitoredLogFile(MonitoredFile monitoredFile) {

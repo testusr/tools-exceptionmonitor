@@ -136,7 +136,7 @@ public class FileMonitorTest {
 
 	}
 	
-	public class FileMonitorFixture extends FileMonitor {
+	public class FileMonitorFixture extends MultiFileMonitor {
 		private File logFileA = createTempFile("logFileA");
 		private File logFileB = createTempFile("logFileB");
 		private File logFileC = createTempFile("logFileC");
