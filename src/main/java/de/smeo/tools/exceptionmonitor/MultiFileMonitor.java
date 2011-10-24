@@ -1,5 +1,4 @@
 package de.smeo.tools.exceptionmonitor;
-Quell
 import java.util.ArrayList;
 import java.util.List;
 
