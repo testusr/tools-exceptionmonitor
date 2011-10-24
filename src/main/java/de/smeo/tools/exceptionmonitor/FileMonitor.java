@@ -19,13 +19,17 @@ public class FileMonitor {
 	public MultiFileExceptionReport createExceptionReportUpdate(){
 		MultiFileExceptionReport multiFileExceptionReport = new MultiFileExceptionReport();
 		for (SingleFileMonitor currSingleFileMonitor : singleFileMonitors){
-			multiFileExceptionReport.addSingleFileReport(currSingleFileMonitor.getExceptionsSinceLastUpdateAndReset());
+			SingleFileExceptionReport singleFileExceptionReport= currSingleFileMonitor.getExceptionsSinceLastUpdateAndReset();
+			if (singleFileExceptionReport.getTotalNoOfExceptions() > 0){
+				multiFileExceptionReport.addSingleFileReport(singleFileExceptionReport);
+			}
+			
 		}
 		return multiFileExceptionReport;
 	}
 	
 	public MultiFileExceptionReport createOverTheDayExecutionReport(){
-		MultiFileExceptionReport multiFileExceptionReport = new MultiFileExceptionReport();
+		MultiFileExceptionReport multiFileExceptionReport = new MultiFileExceptionReport(); 
 		for (SingleFileMonitor currSingleFileMonitor : singleFileMonitors){
 			multiFileExceptionReport.addSingleFileReport(currSingleFileMonitor.getAllDayExceptionReport());
 		}

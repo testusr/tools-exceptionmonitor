@@ -1,13 +1,16 @@
 package de.smeo.tools.exceptionmonitor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MonitoredFile {
 	private boolean isMonitored = true;
 	private long checkInterval;
 	private String filename;
+	private Set<ReportedException> knownExceptions = new HashSet<ReportedException>();
 	private Set<EmailAdress> defaultEmailReceivers = new HashSet<EmailAdress>();
+	
 	
 	public MonitoredFile(long checkInterval, String filename) {
 		super();
@@ -38,4 +41,22 @@ public class MonitoredFile {
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
+	
+	public Set<ReportedException> getKnownExceptions() {
+		return knownExceptions;
+	}
+
+	public void addNewExceptions(List<ReportedException> newExceptions) {
+		knownExceptions.addAll(newExceptions); 
+	}
+
+	@Override
+	public String toString() {
+		return "MonitoredFile [isMonitored=" + isMonitored + ", filename="
+				+ filename + "]";
+	}
+
+
+	
+	
 }

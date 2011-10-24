@@ -55,6 +55,10 @@ public class SingleFileMonitor {
 	public SingleFileExceptionReport getExceptionsSinceLastUpdateAndReset() {
 		SingleFileExceptionReport exceptionsSinceLastUpdate = this.exceptionReportSinceLastUpdate;
 		this.exceptionReportSinceLastUpdate = new SingleFileExceptionReport(getMonitoredFile());
+		if (exceptionsSinceLastUpdate.getTotalNoOfExceptions() > 0){
+			List<ReportedException> newExceptions = exceptionsSinceLastUpdate.separateSightedUnsightedAndReturnUnkownExceptions(monitoredFile.getKnownExceptions());
+			monitoredFile.addNewExceptions(newExceptions);
+		}
 		return exceptionsSinceLastUpdate;
 	}
 	
@@ -77,6 +81,16 @@ public class SingleFileMonitor {
 	protected long getCurrTime() {
 		return System.currentTimeMillis();
 	}
+
+	
+	
+
+	@Override
+	public String toString() {
+		return "SingleFileMonitor [monitoredFile=" + monitoredFile + "]";
+	}
+
+
 
 
 	public class FileChunkReader {

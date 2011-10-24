@@ -1,6 +1,7 @@
 package de.smeo.tools.exceptionmonitor;
  
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
@@ -17,7 +18,7 @@ public class SingleFileExceptionReport {
 		this.monitoredFile = monitoredFile;
 	}
 
-	public List<ReportedException> separateSightedUnsightedAndReturnUnkownExceptions(List<ReportedException> alreadyReportedExceptions){
+	public List<ReportedException> separateSightedUnsightedAndReturnUnkownExceptions(Collection<ReportedException> alreadyReportedExceptions){
 		sightedExceptionsGroupedByRootCause = new ArrayList<ReportedExceptionOccurances>();
 		unsightedExceptionsGroupedByRootCause = new ArrayList<ReportedExceptionOccurances>();
 		unkownExceptionsGroupedByRootCause = new ArrayList<ReportedExceptionOccurances>();
@@ -34,13 +35,18 @@ public class SingleFileExceptionReport {
 				} else {
 					ReportedException newReportedException = new ReportedException(currExceptionContainer.getSampleExceptionChain());
 					unkownExceptionsGroupedByRootCause.add(new ReportedExceptionOccurances(newReportedException, currExceptionContainer));
+					unknownExceptions.add(newReportedException);
 				}
 		}
 		return unknownExceptions;
 	}
 	
+	public MonitoredFile getMonitoredFile() {
+		return monitoredFile;
+	}
+	
 	private static ReportedException getReportedExceptionForContainer(EqualCauseExceptionChainContainer currExceptionContainer,
-			List<ReportedException> alreadyReportedExceptions) {
+			Collection<ReportedException> alreadyReportedExceptions) {
 		for (ReportedException currReportedException : alreadyReportedExceptions){
 			if (currExceptionContainer.hasEqualRootCause(currReportedException.getSampleExceptionChain())){
 				return currReportedException;
@@ -58,6 +64,14 @@ public class SingleFileExceptionReport {
 	
 	public List<ReportedExceptionOccurances> getUnkownExceptions() {
 		return unkownExceptionsGroupedByRootCause;
+	}
+	
+	public int getTotalNoOfExceptions() {
+		int totalNumberOfExceptions = 0;
+		for (EqualCauseExceptionChainContainer currChainContainer : reportedExceptionsGroupedByRootCause){
+			totalNumberOfExceptions += currChainContainer.size();
+		}
+		return totalNumberOfExceptions;
 	}
 
 	public void addExceptions(List<EqualCauseExceptionChainContainer> newExceptionsGroupedByRootCause) {
