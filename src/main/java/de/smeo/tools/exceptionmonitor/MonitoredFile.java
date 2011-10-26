@@ -56,6 +56,11 @@ public class MonitoredFile {
 				+ filename + "]";
 	}
 
+	public List<EmailAdress> getDefaultEmailAdresses() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	
 	

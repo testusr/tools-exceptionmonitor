@@ -2,6 +2,7 @@ package de.smeo.tools.exceptionmonitor;
  
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
@@ -96,6 +97,34 @@ public class SingleFileExceptionReport {
 		return null;
 	}
 	
+	public void prepareEmails(EmailOutBox emailOutBox) {
+		for (ReportedExceptionOccurances currUnkownException : getUnkownExceptions()){
+			for (EmailAdress currDefaultEmailAdress : monitoredFile.getDefaultEmailAdresses()){
+				emailOutBox.emailExceptionToRecipient(currDefaultEmailAdress, monitoredFile, currUnkownException);
+			}
+		}
+		for (ReportedExceptionOccurances currSightedException : getSightedExceptions()){
+			List<EmailAdress> recipients = currSightedException.getEmailAdressesToNotify();
+			if (recipients == null){
+				recipients = monitoredFile.getDefaultEmailAdresses();
+			}
+			for (EmailAdress currDefaultEmailAdress : monitoredFile.getDefaultEmailAdresses()){
+				emailOutBox.emailExceptionToRecipient(currDefaultEmailAdress, monitoredFile, currSightedException);
+			}
+		}
+		for (ReportedExceptionOccurances currUnSightedException : getUnSightedExceptions()){
+			List<EmailAdress> recipients = currUnSightedException.getEmailAdressesToNotify();
+			if (recipients == null){
+				recipients = monitoredFile.getDefaultEmailAdresses();
+			}
+			for (EmailAdress currDefaultEmailAdress : monitoredFile.getDefaultEmailAdresses()){
+				emailOutBox.emailExceptionToRecipient(currDefaultEmailAdress, monitoredFile, currUnSightedException);
+			}
+		}
+		
+		
+	}
+	
 	public static class ReportedExceptionOccurances {
 		private final ReportedException reportedException;
 		private final EqualCauseExceptionChainContainer occurances;
@@ -107,11 +136,24 @@ public class SingleFileExceptionReport {
 			this.occurances = occurances;
 		}
 
+		public List<EmailAdress> getEmailAdressesToNotify() {
+			if (!reportedException.isCanBeIgnored()){
+				return reportedException.getEmailAdressesToInform();
+			}
+			return Collections.EMPTY_LIST;
+		}
+
+		public ReportedException getReportedException() {
+			return reportedException;
+		}
+		
 		public int occuranceCount() {
 			return occurances.size();
 		}
 		
 		
 	}
+
+
 
 }

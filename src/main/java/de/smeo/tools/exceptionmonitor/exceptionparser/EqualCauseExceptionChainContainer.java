@@ -53,6 +53,6 @@ public class EqualCauseExceptionChainContainer {
 	}
 
 	public String getFirstExceptionName() {
-		return getSampleExceptionChain().getExceptions().get(0).getExceptionClassName();
+		return getSampleExceptionChain().getFirstExceptionName();
 	}
 }

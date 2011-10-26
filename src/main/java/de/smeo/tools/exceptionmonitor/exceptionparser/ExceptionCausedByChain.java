@@ -62,5 +62,9 @@ public class ExceptionCausedByChain {
 		return causedByChain.size();
 	}
 
+	public String getFirstExceptionName() {
+		return getExceptions().get(0).getExceptionClassName();
+	}
+
 
 }

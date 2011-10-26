@@ -43,7 +43,7 @@ public class ExceptionReport {
 		}
 	}
 	
-	public void createReport(String logfilename){
+	public void createAndPrintReport(String logfilename){
 		LogFileExceptionParser logFileExceptionParser = new LogFileExceptionParser();
 		try {
 			long start = System.currentTimeMillis();
@@ -52,19 +52,22 @@ public class ExceptionReport {
 			System.out.println("finished parsing logfile, took "+ (System.currentTimeMillis() - start) +" ms");
 		
 			List<ExceptionCausedByChain> exceptionChains = logFileExceptionParser.getExceptionChains();
-			List<EqualCauseExceptionChainContainer> equalsCauseExceptionChainContainers = EqualCauseExceptionContainerFactory.createEqualCauseContainers(exceptionChains);
-			for (EqualCauseExceptionChainContainer currEqualCauseExceptionChainContainer : equalsCauseExceptionChainContainers){
-				namedExceptionChains.add(new NamedExceptionChain(currEqualCauseExceptionChainContainer));
-			}
+			addExceptionChains(exceptionChains);
 			
-			sortNamedChainsAndSetNames();
-			printShortDescription();
-			System.out.println("\n\n\n");
-			printFullDescription();
+			System.out.println(this.toString());
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+	}
+
+	private void addExceptionChains(List<ExceptionCausedByChain> exceptionChains) {
+		List<EqualCauseExceptionChainContainer> equalsCauseExceptionChainContainers = EqualCauseExceptionContainerFactory.createEqualCauseContainers(exceptionChains);
+		for (EqualCauseExceptionChainContainer currEqualCauseExceptionChainContainer : equalsCauseExceptionChainContainers){
+			namedExceptionChains.add(new NamedExceptionChain(currEqualCauseExceptionChainContainer));
+		}
+		sortNamedChainsAndSetNames();
 
 	}
 	
@@ -76,32 +79,45 @@ public class ExceptionReport {
 		}
 	}
 
-	private void printFullDescription() {
-		System.out.println("----------------------------------------");
-		System.out.println("Full Description");
-		System.out.println("----------------------------------------");
-		System.out.println("Note: the exception stacktraces present the");
-		System.out.println("first occuring exception, the comments for ");
-		System.out.println("the other listed occurances can be different.");
-		System.out.println("----------------------------------------\n");
+	private String getFullDescription() {
+		StringBuffer stringBuffer = new StringBuffer();
+		stringBuffer.append("----------------------------------------");
+		stringBuffer.append("Full Description");
+		stringBuffer.append("----------------------------------------");
+		stringBuffer.append("Note: the exception stacktraces present the");
+		stringBuffer.append("first occuring exception, the comments for ");
+		stringBuffer.append("the other listed occurances can be different.");
+		stringBuffer.append("----------------------------------------\n");
 		for (NamedExceptionChain currExceptionChain : namedExceptionChains){
-			System.out.println(currExceptionChain.getFullDescription());
+			stringBuffer.append(currExceptionChain.getFullDescription());
 		}
+		return stringBuffer.toString();
 	}
 
-	private void printShortDescription() {
-		System.out.println("----------------------------------------");
-		System.out.println("Short Description");
-		System.out.println("----------------------------------------");
+	private String getShortDescription() {
+		StringBuffer stringBuffer = new StringBuffer();
+		stringBuffer.append("----------------------------------------");
+		stringBuffer.append("Short Description");
+		stringBuffer.append("----------------------------------------");
 		for (NamedExceptionChain currExceptionChain : namedExceptionChains){
-			System.out.println(currExceptionChain.getShortDescription());
+			stringBuffer.append(currExceptionChain.getShortDescription());
 		}
+		return stringBuffer.toString();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer stringBuffer = new StringBuffer();
+		stringBuffer.append(getShortDescription());
+		stringBuffer.append("\n\n\n");
+		stringBuffer.append(getFullDescription());
+		return stringBuffer.toString();
 	}
 	
 	public static void main(String[] args) {
 		String logfilename = args[0];
 		
 		ExceptionReport exceptionReport = new ExceptionReport();
-		exceptionReport.createReport(logfilename);
+		exceptionReport.createAndPrintReport(logfilename);
 	}
 }

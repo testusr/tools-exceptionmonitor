@@ -1,9 +1,18 @@
 package de.smeo.tools.exceptionmonitor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import de.smeo.tools.exceptionmonitor.SingleFileExceptionReport.ReportedExceptionOccurances;
 
 public class MultiFileMonitor {
+	private Timer fileCheckTimer = new Timer();
+	
 	private List<SingleFileMonitor> singleFileMonitors = new ArrayList<SingleFileMonitor>();
+	private TimerTask checkFilesForExceptionsTask = null;
 	
 	public void addMonitoredLogFile(MonitoredFile monitoredFile) {
 		singleFileMonitors.add(new SingleFileMonitor(monitoredFile));
@@ -33,6 +42,32 @@ public class MultiFileMonitor {
 			multiFileExceptionReport.addSingleFileReport(currSingleFileMonitor.getAllDayExceptionReport());
 		}
 		return multiFileExceptionReport;
-		
 	}
+	
+
+	public void startToMonitor(){
+		if ( checkFilesForExceptionsTask == null){
+			checkFilesForExceptionsTask = new TimerTask() {
+				
+				@Override
+				public void run() {
+					try {
+						checkFilesIfNecessary();
+						MultiFileExceptionReport multiFileExceptionReport = createExceptionReportUpdate();
+						sendEmailsIfNecessary(multiFileExceptionReport);
+					} catch (Exception e){
+						e.printStackTrace();
+					}
+				}
+			};
+		}
+		fileCheckTimer.schedule(checkFilesForExceptionsTask, 1000*60*5);
+	}
+
+	protected void sendEmailsIfNecessary(MultiFileExceptionReport multiFileExceptionReport) {
+		EmailOutBox emailOutBox = new EmailOutBox();
+		multiFileExceptionReport.prepareEmails(emailOutBox);
+		emailOutBox.sendEmails();
+	}
+
 }

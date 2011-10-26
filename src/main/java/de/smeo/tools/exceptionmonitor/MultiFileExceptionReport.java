@@ -28,5 +28,15 @@ public class MultiFileExceptionReport {
 		}
 		return null;
 	}
+
+	public List<SingleFileExceptionReport>  getSingleFileExceptionReports() {
+		return singleFileExecutionReports;
+	}
+
+	public void prepareEmails(EmailOutBox emailOutBox) {
+		for (SingleFileExceptionReport currSingleFileExceptionReport : singleFileExecutionReports){
+			currSingleFileExceptionReport.prepareEmails(emailOutBox);
+		}
+	}
 } 
   

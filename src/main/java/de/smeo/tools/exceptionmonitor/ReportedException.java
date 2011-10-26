@@ -48,6 +48,10 @@ public class ReportedException {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+	
+	public List<EmailAdress> getEmailAdressesToInform() {
+		return emailAdressesToInform;
+	}
 
 	public ExceptionCausedByChain getSampleExceptionChain() {
 		return sampleExceptionCausedByChain;
