@@ -1,15 +1,16 @@
 package de.smeo.tools.exceptionmonitor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class MonitoredFile {
+	private String filename;
 	private boolean isMonitored = true;
 	private long checkInterval;
-	private String filename;
-	private Set<ReportedException> knownExceptions = new HashSet<ReportedException>();
 	private Set<EmailAdress> defaultEmailReceivers = new HashSet<EmailAdress>();
+	private List<ReportedException> knownExceptions = new ArrayList<ReportedException>();
 	
 	
 	public MonitoredFile(long checkInterval, String filename) {
@@ -42,7 +43,7 @@ public class MonitoredFile {
 		this.filename = filename;
 	}
 	
-	public Set<ReportedException> getKnownExceptions() {
+	public List<ReportedException> getKnownExceptions() {
 		return knownExceptions;
 	}
 
@@ -56,9 +57,37 @@ public class MonitoredFile {
 				+ filename + "]";
 	}
 
-	public List<EmailAdress> getDefaultEmailAdresses() {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<EmailAdress> getDefaultEmailAdresses() {
+		return defaultEmailReceivers;
+	}
+
+
+	public int getIndexForException(ReportedException reportedException){
+		int index=-1;
+		for (ReportedException currException : knownExceptions){
+			index++;
+			if (currException.hasEqualRootCause(reportedException)){
+				return index;
+			}
+		}
+		return index;
+	}
+	
+	public int addKnownException(ReportedException reportedException) {
+		int  index = getIndexForException(reportedException);
+		if (index == -1){
+			knownExceptions.add(reportedException);
+			return knownExceptions.size()-1;
+		}
+		return index;
+	}
+
+	public void addDefaultEmailAdress(EmailAdress emailAdress) {
+		defaultEmailReceivers.add(emailAdress);
+	}
+
+	public ReportedException getExceptionWithIndex(int index) {
+		return knownExceptions.get(index);
 	}
 
 

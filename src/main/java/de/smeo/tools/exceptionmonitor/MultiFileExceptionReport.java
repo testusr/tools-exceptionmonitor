@@ -38,5 +38,11 @@ public class MultiFileExceptionReport {
 			currSingleFileExceptionReport.prepareEmails(emailOutBox);
 		}
 	}
+
+	public void addMultiFileExceptionReport(MultiFileExceptionReport multiFileExceptionReport) {
+		for (SingleFileExceptionReport currSingleFileExceptionReport : multiFileExceptionReport.singleFileExecutionReports){
+			addSingleFileReport(currSingleFileExceptionReport);
+		}
+	}
 } 
   

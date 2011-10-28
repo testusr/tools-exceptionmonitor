@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -136,6 +137,23 @@ public class FileMonitorTest {
 
 	}
 	
+	@Test
+	public void testReportUpdatesWithRollingFiles(){
+		FileMonitorFixture fileMonitor = new FileMonitorFixture();
+		fileMonitor.init();
+		
+		fileMonitor.appendToLogFileB(EXCEPTION1_ROOTCAUSE1);
+		fileMonitor.createReport();
+		
+		fileMonitor.reCreateLogFileB();
+		fileMonitor.appendToLogFileB(EXCEPTION2_ROOTCAUSE1);
+		fileMonitor.appendToLogFileB(EXCEPTION3_ROOTCAUSE2);
+		fileMonitor.createReport();
+
+		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameB(), 2);
+		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameB(), 1);
+	}
+	
 	public class FileMonitorFixture extends MultiFileMonitor {
 		private File logFileA = createTempFile("logFileA");
 		private File logFileB = createTempFile("logFileB");
@@ -147,6 +165,16 @@ public class FileMonitorTest {
 			addMonitoredLogFile(new MonitoredFile(0, getLogFilenNameA()));
 			addMonitoredLogFile(new MonitoredFile(0, getLogFilenNameB()));
 			addMonitoredLogFile(new MonitoredFile(0, getLogFilenNameC()));
+		}
+
+		public void reCreateLogFileB() {
+			logFileB.delete();
+			try {
+				logFileB.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+				Assert.fail();
+			}	
 		}
 
 		public void appendToLogFileA(String logContent) {

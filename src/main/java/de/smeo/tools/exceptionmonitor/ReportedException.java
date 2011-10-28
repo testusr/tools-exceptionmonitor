@@ -1,5 +1,6 @@
 package de.smeo.tools.exceptionmonitor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
@@ -56,6 +57,22 @@ public class ReportedException {
 	public ExceptionCausedByChain getSampleExceptionChain() {
 		return sampleExceptionCausedByChain;
 	}
+
+	public boolean hasEqualRootCause(ReportedException reportedException) {
+		if (getSampleExceptionChain().hasEqualRootCause(reportedException.getSampleExceptionChain())){
+			return true;
+		}
+		return false;
+	}
+
+	public void addEmailReceiver(EmailAdress emailAdress) {
+		if (emailAdressesToInform == null){
+			emailAdressesToInform = new ArrayList<EmailAdress>();
+		}
+		emailAdressesToInform.add(emailAdress);
+	}
+	
+	
 	
 	
 }

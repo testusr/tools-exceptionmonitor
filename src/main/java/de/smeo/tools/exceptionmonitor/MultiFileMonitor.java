@@ -65,9 +65,14 @@ public class MultiFileMonitor {
 	}
 
 	protected void sendEmailsIfNecessary(MultiFileExceptionReport multiFileExceptionReport) {
-		EmailOutBox emailOutBox = new EmailOutBox();
+		EmailOutBox emailOutBox = getNewEmailOutBox();
+		multiFileExceptionReport.addMultiFileExceptionReport(multiFileExceptionReport);
 		multiFileExceptionReport.prepareEmails(emailOutBox);
 		emailOutBox.sendEmails();
+	}
+
+	protected EmailOutBox getNewEmailOutBox() {
+		return new EmailOutBox();
 	}
 
 }

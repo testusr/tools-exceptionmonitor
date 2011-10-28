@@ -106,6 +106,10 @@ public class SingleFileMonitor {
 			fileToRead = new File(getMonitoredFile().getFilename());
 		}
 
+		/**
+		 * getun the next chunk of full filens from a file (eding with a \n)
+		 * @return
+		 */
 		public String getNextChunk() {
 			if (fileToRead.exists()  && getMonitoredFile().isMonitored()){
 				try {

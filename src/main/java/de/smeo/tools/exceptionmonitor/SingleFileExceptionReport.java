@@ -104,7 +104,7 @@ public class SingleFileExceptionReport {
 			}
 		}
 		for (ReportedExceptionOccurances currSightedException : getSightedExceptions()){
-			List<EmailAdress> recipients = currSightedException.getEmailAdressesToNotify();
+			Collection<EmailAdress> recipients = currSightedException.getEmailAdressesToNotify();
 			if (recipients == null){
 				recipients = monitoredFile.getDefaultEmailAdresses();
 			}
@@ -113,7 +113,7 @@ public class SingleFileExceptionReport {
 			}
 		}
 		for (ReportedExceptionOccurances currUnSightedException : getUnSightedExceptions()){
-			List<EmailAdress> recipients = currUnSightedException.getEmailAdressesToNotify();
+			Collection<EmailAdress> recipients = currUnSightedException.getEmailAdressesToNotify();
 			if (recipients == null){
 				recipients = monitoredFile.getDefaultEmailAdresses();
 			}

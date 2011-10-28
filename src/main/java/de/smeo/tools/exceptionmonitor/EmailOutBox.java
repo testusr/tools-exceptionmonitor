@@ -68,7 +68,7 @@ public class EmailOutBox {
 		
 	}
 
-	private static class ExceptionReportEmail {
+	public static class ExceptionReportEmail {
 		private final EmailAdress emailAdress;
 		private final String filename;
 		private ExceptionReport exceptionReport = new ExceptionReport();
