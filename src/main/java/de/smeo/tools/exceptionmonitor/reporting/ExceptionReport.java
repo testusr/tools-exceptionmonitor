@@ -1,11 +1,11 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.reporting;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.smeo.tools.exceptionmonitor.SingleFileExceptionReport.ReportedExceptionOccurances;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.reporting.SingleFileExceptionReport.ReportedExceptionOccurances;
 
 public class ExceptionReport {
 	private List<NamedException> namedExceptionChains = new ArrayList<NamedException>();

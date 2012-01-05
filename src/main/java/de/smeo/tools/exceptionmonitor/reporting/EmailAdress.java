@@ -1,4 +1,4 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.reporting;
 
 public class EmailAdress {
 	private String addressString;

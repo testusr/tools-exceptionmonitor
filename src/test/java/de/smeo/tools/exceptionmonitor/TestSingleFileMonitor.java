@@ -16,6 +16,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor;
+import de.smeo.tools.exceptionmonitor.reporting.MonitoredFile;
+import de.smeo.tools.exceptionmonitor.reporting.SingleFileExceptionReport;
 
 
 public class TestSingleFileMonitor {
@@ -174,15 +177,15 @@ public class TestSingleFileMonitor {
 		singleFileMonitorTestFixture.setTime(currentTime);
 		assertTrue(singleFileMonitorTestFixture.getLastFileCheckTime() < 0);
 		
-		singleFileMonitorTestFixture.checkFileIfNecessary();
+		singleFileMonitorTestFixture.parseNewFileEntriesIfNecessary();
 		assertEquals(singleFileMonitorTestFixture.getLastFileCheckTime(), currentTime);
 
-		singleFileMonitorTestFixture.checkFileIfNecessary();
+		singleFileMonitorTestFixture.parseNewFileEntriesIfNecessary();
 		assertEquals(singleFileMonitorTestFixture.getLastFileCheckTime(), currentTime);
 
 		singleFileMonitorTestFixture.setTime(currentTime + checkIntervalInMs);
 		
-		singleFileMonitorTestFixture.checkFileIfNecessary();
+		singleFileMonitorTestFixture.parseNewFileEntriesIfNecessary();
 		assertEquals(singleFileMonitorTestFixture.getLastFileCheckTime(), (currentTime + checkIntervalInMs));
 		
 	}
@@ -192,13 +195,13 @@ public class TestSingleFileMonitor {
 		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(checkIntervalInMs);
 
 		singleFileMonitorTestFixture.writeToFile(ONE_AND_A_HALF_EXCEPTIONS);
-		List<ExceptionCausedByChain> loggedExceptionChains = singleFileMonitorTestFixture.checkFile();
+		List<ExceptionCausedByChain> loggedExceptionChains = singleFileMonitorTestFixture.parseNewFileEntriesAndReturnExceptions();
 		
-		loggedExceptionChains = singleFileMonitorTestFixture.checkFile();
+		loggedExceptionChains = singleFileMonitorTestFixture.parseNewFileEntriesAndReturnExceptions();
 		assertEquals(0, loggedExceptionChains.size());
 
 		singleFileMonitorTestFixture.writeToFile(SECOND_HALF);
-		loggedExceptionChains = singleFileMonitorTestFixture.checkFile();
+		loggedExceptionChains = singleFileMonitorTestFixture.parseNewFileEntriesAndReturnExceptions();
 		assertEquals(2, loggedExceptionChains.size());
 	}
 	
@@ -310,7 +313,7 @@ public class TestSingleFileMonitor {
 		}
 
 		private SingleFileExceptionReport getExecutionReportAndSeparateExceptions() {
-			checkFileIfNecessary();
+			parseNewFileEntriesIfNecessary();
 			SingleFileExceptionReport singleFileExceptionReport = getExceptionsSinceLastUpdateAndReset();
 			singleFileExceptionReport.separateSightedUnsightedAndReturnUnkownExceptions(Collections.EMPTY_LIST);
 			return singleFileExceptionReport;

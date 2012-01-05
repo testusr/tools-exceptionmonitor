@@ -6,7 +6,9 @@ import java.util.List;
 
 /**
  * A Container for exceptions sharing the same root cause /
- * sharing the same stack trace characteristics
+ * sharing the same stack trace characteristics. The sample exception chain is an example of a exception
+ * of this type.
+ * All other exception chains contain the same exception combination but could contain different individual error messages etc
  *
  */
 public class EqualCauseExceptionChainContainer {

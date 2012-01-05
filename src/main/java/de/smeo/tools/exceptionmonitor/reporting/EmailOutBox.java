@@ -1,4 +1,4 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.reporting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
 
-import de.smeo.tools.exceptionmonitor.SingleFileExceptionReport.ReportedExceptionOccurances;
+import de.smeo.tools.exceptionmonitor.reporting.SingleFileExceptionReport.ReportedExceptionOccurances;
 
 public class EmailOutBox {
 	List<ExceptionReportEmail> preparedEmails = new ArrayList<EmailOutBox.ExceptionReportEmail>();

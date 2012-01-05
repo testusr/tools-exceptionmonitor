@@ -10,6 +10,14 @@ import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionContain
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 import de.smeo.tools.exceptionmonitor.exceptionparser.LogFileExceptionParser;
 
+/**
+ * Quick and dirty command line tool to get an overview about the exceptions within a logfile. 
+ * The different types of exceptions are printed together with the occurance count, sorted by the 
+ * number of occurances. 
+ * 
+ * @author smeo
+ *
+ */
 public class ExceptionReport {
 	List<NamedExceptionChain> namedExceptionChains = new ArrayList<ExceptionReport.NamedExceptionChain>();
 	

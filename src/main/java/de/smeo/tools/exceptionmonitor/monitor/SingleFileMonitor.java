@@ -1,32 +1,35 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.monitor;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.util.List;
 
-import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
+import de.smeo.tools.exceptionmonitor.reporting.MonitoredFile;
 
+/**
+ * Responsible for reading a single log file. It continues on the file position it stopped
+ * last time checking the file. 
+ * The file is read in chunks.
+ * 
+ * The monitor is preparing a all day report and a change report (getExceptionsSinceLastUpdateAndReset)
+ * 
+ * @author smeo
+ *
+ */
 public class SingleFileMonitor {
 	private long lastFileCheckTime = -1;
 	private ExceptionParser exceptionParser = new ExceptionParser();
 	private MonitoredFile monitoredFile;
-	private SingleFileExceptionReport allDayExceptionReport;
-	private SingleFileExceptionReport exceptionReportSinceLastUpdate;
 	private FileChunkReader fileChunkReader;
 	
 	public SingleFileMonitor(MonitoredFile monitoredFile) {
 		this.monitoredFile = monitoredFile;
 		fileChunkReader = new FileChunkReader();
-
-		allDayExceptionReport = new SingleFileExceptionReport(monitoredFile);
-		exceptionReportSinceLastUpdate = new SingleFileExceptionReport(monitoredFile);
-
 	}
 
-	public synchronized List<ExceptionCausedByChain> checkFile() 
+	public synchronized List<ExceptionCausedByChain> parseNewFileEntriesAndReturnExceptions() 
 	{
 		lastFileCheckTime = getCurrTime();
 		exceptionParser.clean();
@@ -34,11 +37,6 @@ public class SingleFileMonitor {
 		while ( (nextLogFileChunk = getNextLogFileChunk()) != null){
 			exceptionParser.parse(nextLogFileChunk);
 		}
-		List<EqualCauseExceptionChainContainer> exceptionChains = exceptionParser.getExceptionGroupedByRootCause();
-		
-		allDayExceptionReport.addExceptions(exceptionChains);
-		exceptionReportSinceLastUpdate.addExceptions(exceptionChains);
-		
 		return exceptionParser.getExceptionChains();
 	}
 	
@@ -46,24 +44,10 @@ public class SingleFileMonitor {
 		return fileChunkReader.getNextChunk();
 	}
 
-	public synchronized void checkFileIfNecessary() {
+	public synchronized void parseNewFileEntriesIfNecessary() {
 		if ((lastFileCheckTime < 0) || (getFileCheckInterval() < 0) || (lastFileCheckTime + getFileCheckInterval()) <= getCurrTime()){
-			checkFile();
+			parseNewFileEntriesAndReturnExceptions();
 		}
-	}
-	
-	public SingleFileExceptionReport getExceptionsSinceLastUpdateAndReset() {
-		SingleFileExceptionReport exceptionsSinceLastUpdate = this.exceptionReportSinceLastUpdate;
-		this.exceptionReportSinceLastUpdate = new SingleFileExceptionReport(getMonitoredFile());
-		if (exceptionsSinceLastUpdate.getTotalNoOfExceptions() > 0){
-			List<ReportedException> newExceptions = exceptionsSinceLastUpdate.separateSightedUnsightedAndReturnUnkownExceptions(monitoredFile.getKnownExceptions());
-			monitoredFile.addNewExceptions(newExceptions);
-		}
-		return exceptionsSinceLastUpdate;
-	}
-	
-	public SingleFileExceptionReport getAllDayExceptionReport() {
-		return this.allDayExceptionReport;
 	}
 	
 	private long getFileCheckInterval() {

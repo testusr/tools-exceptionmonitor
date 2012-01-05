@@ -1,4 +1,4 @@
-package de.smeo.tools.exceptionmonitor;
+package de.smeo.tools.exceptionmonitor.reporting;
  
 import java.util.ArrayList;
 import java.util.Collection;

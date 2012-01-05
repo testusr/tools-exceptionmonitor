@@ -5,8 +5,9 @@ import java.util.List;
 
 
 /**
- * Exception chain is representing exceptions leasing to exceptions, marked by the 
+ * Exception chain is representing exceptions leading to exceptions, marked by the 
  * "Caused by" in the logged stacktraces
+ * This class combines the unique exceptions to a single chain
  * @author smeo
  *
  */

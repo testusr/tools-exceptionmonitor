@@ -13,9 +13,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import de.smeo.tools.exceptionmonitor.EmailOutBox.ExceptionReportEmail;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
+import de.smeo.tools.exceptionmonitor.reporting.EmailAdress;
+import de.smeo.tools.exceptionmonitor.reporting.EmailOutBox;
+import de.smeo.tools.exceptionmonitor.reporting.MonitoredFile;
+import de.smeo.tools.exceptionmonitor.reporting.ReportedException;
+import de.smeo.tools.exceptionmonitor.reporting.EmailOutBox.ExceptionReportEmail;
 
 public class MultiFileMonitorTest {
 	
@@ -253,13 +257,13 @@ public class MultiFileMonitorTest {
 		}
 		
 		public void verifyNoEmailSend() {
-			if (lastEmailOutBox != null){
-				Assert.assertTrue(lastEmailOutBox.preparedEmails.size() == 0);
-			}
+			Assert.assertTrue(lastEmailOutBox.preparedEmails.size() == 0);
 		}
 
 		public void checkFiles() {
 			this.checkFilesIfNecessary();
+			MultiFileExceptionReport exceptionReportUpdate = createExceptionReportUpdate();
+			this.sendEmailsIfNecessary(exceptionReportUpdate);
 		}
 		
 		@Override
