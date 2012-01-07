@@ -2,11 +2,11 @@ package de.smeo.tools.exceptionmonitor.monitor;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.io.Serializable;
 import java.util.List;
 
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
-import de.smeo.tools.exceptionmonitor.reporting.MonitoredFile;
 
 /**
  * Responsible for reading a single log file. It continues on the file position it stopped
@@ -21,14 +21,25 @@ import de.smeo.tools.exceptionmonitor.reporting.MonitoredFile;
 public class SingleFileMonitor {
 	private long lastFileCheckTime = -1;
 	private ExceptionParser exceptionParser = new ExceptionParser();
-	private MonitoredFile monitoredFile;
+	private File monitoredFile;
+	private FileMonitorState fileMonitorState;
 	private FileChunkReader fileChunkReader;
 	
-	public SingleFileMonitor(MonitoredFile monitoredFile) {
+	public SingleFileMonitor(File monitoredFile) {
 		this.monitoredFile = monitoredFile;
 		fileChunkReader = new FileChunkReader();
 	}
+	
+	
 
+	public FileMonitorState getFileMonitorState() {
+		return this.fileMonitorState;
+	}
+
+	public synchronized void setFileMonitorState(FileMonitorState fileMonitorState){	
+		this.fileMonitorState = fileMonitorState;
+	}
+	
 	public synchronized List<ExceptionCausedByChain> parseNewFileEntriesAndReturnExceptions() 
 	{
 		lastFileCheckTime = getCurrTime();
@@ -44,64 +55,38 @@ public class SingleFileMonitor {
 		return fileChunkReader.getNextChunk();
 	}
 
-	public synchronized void parseNewFileEntriesIfNecessary() {
-		if ((lastFileCheckTime < 0) || (getFileCheckInterval() < 0) || (lastFileCheckTime + getFileCheckInterval()) <= getCurrTime()){
-			parseNewFileEntriesAndReturnExceptions();
-		}
-	}
-	
-	private long getFileCheckInterval() {
-		return monitoredFile.getCheckInterval();
-	}
-
 	public long getLastFileCheckTime() {
 		return this.lastFileCheckTime;
-	}
-	
-	public MonitoredFile getMonitoredFile() {
-		return monitoredFile;
 	}
 	
 	protected long getCurrTime() {
 		return System.currentTimeMillis();
 	}
 
-	
-	
-
 	@Override
 	public String toString() {
 		return "SingleFileMonitor [monitoredFile=" + monitoredFile + "]";
 	}
 
-
-
-
+	
 	public class FileChunkReader {
 		private int MAX_CHUNK_SIZE = 1024 * 100;
-		private File fileToRead;
-
-		private long lastReadFilePosition = 0;
-		private long lastFileSize;
 
 		private String lastLineOfLastChunk;
-		
-		public FileChunkReader() {
-			fileToRead = new File(getMonitoredFile().getFilename());
-		}
+
 
 		/**
 		 * getun the next chunk of full filens from a file (eding with a \n)
 		 * @return
 		 */
 		public String getNextChunk() {
-			if (fileToRead.exists()  && getMonitoredFile().isMonitored()){
+			if (monitoredFile.exists()){
 				try {
-					RandomAccessFile randomAccessFile = new RandomAccessFile(fileToRead, "r");
+					RandomAccessFile randomAccessFile = new RandomAccessFile(monitoredFile, "r");
 					resetFilePositionIfFileGotSmaller();
 					
 					byte[] destinationArray = new byte[MAX_CHUNK_SIZE];
-					randomAccessFile.seek(lastReadFilePosition);
+					randomAccessFile.seek(fileMonitorState.lastReadFilePosition);
 					int readBytes = randomAccessFile.read(destinationArray, 0, MAX_CHUNK_SIZE);
 					randomAccessFile.close();
 
@@ -112,7 +97,7 @@ public class SingleFileMonitor {
 					}
 					
 					if (readBytes != -1){
-						lastReadFilePosition = lastReadFilePosition+readBytes;
+						fileMonitorState.lastReadFilePosition = fileMonitorState.lastReadFilePosition+readBytes;
 						
 						String stringFromReadArray = createStringFromArray(destinationArray, readBytes);
 						lastLineOfLastChunk = addStringWithoutLastLine(newChunk, stringFromReadArray);
@@ -125,8 +110,7 @@ public class SingleFileMonitor {
 
 				}  catch (Exception e) {
 					e.printStackTrace();
-					System.err.println("problem while reading file: " + fileToRead.getAbsoluteFile() + " will stop to read");
-					getMonitoredFile().setMonitored(false);
+					System.err.println("problem while reading file: " + monitoredFile.getAbsoluteFile() + " will stop to read");
 				}
 			}
 			
@@ -154,11 +138,19 @@ public class SingleFileMonitor {
 		}
 
 		private void resetFilePositionIfFileGotSmaller() {
-			if (fileToRead.length() < lastFileSize){
-				lastReadFilePosition = 0;
+			if (monitoredFile.length() < fileMonitorState.lastFileSize){
+				System.out.println("Monitored log file got smaller, start from beginning '"+monitoredFile.getAbsolutePath()+"'");
+				fileMonitorState.lastReadFilePosition = 0;
 			}
 		}
 
+	}
+	
+	public static class FileMonitorState implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		public long lastReadFilePosition = 0;
+		public long lastFileSize;
 	}
 	
 }

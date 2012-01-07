@@ -2,6 +2,7 @@ package de.smeo.tools.exceptionmonitor.commandline;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class ExceptionReport {
 	List<NamedExceptionChain> namedExceptionChains = new ArrayList<ExceptionReport.NamedExceptionChain>();
 	
 	private class NamedExceptionChain implements Comparable<NamedExceptionChain>{
+		private Boolean exceptionOccuringTheFirstTime;
 		private String name;
 		private EqualCauseExceptionChainContainer equalCauseExceptionChainContainer;
 
@@ -42,12 +44,23 @@ public class ExceptionReport {
 					equalCauseExceptionChainContainer.getSampleExceptionChain().toString();
 		}
 		
+		
 		public int compareTo(NamedExceptionChain o) {
+			if (o.exceptionOccuringTheFirstTime != exceptionOccuringTheFirstTime){
+				if (o.exceptionOccuringTheFirstTime){
+					return 1;
+				}
+				return 0;
+			}
 			int result = (new Integer(o.equalCauseExceptionChainContainer.size()).compareTo(equalCauseExceptionChainContainer.size()));
 			if (result == 0){
 				(o.equalCauseExceptionChainContainer.getFirstExceptionName()).compareTo(equalCauseExceptionChainContainer.getFirstExceptionName());
 			}
 			return result;
+		}
+
+		public void setExceptionOccursTheFirstTime(boolean isExceptionsOccuringFirstTime) {
+			this.exceptionOccuringTheFirstTime = isExceptionsOccuringFirstTime;
 		}
 	}
 	
@@ -69,14 +82,23 @@ public class ExceptionReport {
 		}
 
 	}
-
+	
+	
 	private void addExceptionChains(List<ExceptionCausedByChain> exceptionChains) {
 		List<EqualCauseExceptionChainContainer> equalsCauseExceptionChainContainers = EqualCauseExceptionContainerFactory.createEqualCauseContainers(exceptionChains);
+		addExceptionContainers(equalsCauseExceptionChainContainers, null);
+	}
+
+
+	public void addExceptionContainers(Collection<EqualCauseExceptionChainContainer> equalsCauseExceptionChainContainers, Boolean isExceptionsOccuringFirstTime) {
 		for (EqualCauseExceptionChainContainer currEqualCauseExceptionChainContainer : equalsCauseExceptionChainContainers){
-			namedExceptionChains.add(new NamedExceptionChain(currEqualCauseExceptionChainContainer));
+			NamedExceptionChain namedExceptionChain = new NamedExceptionChain(currEqualCauseExceptionChainContainer);
+			if (isExceptionsOccuringFirstTime != null){
+				namedExceptionChain.setExceptionOccursTheFirstTime(isExceptionsOccuringFirstTime);
+			}
+			namedExceptionChains.add(namedExceptionChain);
 		}
 		sortNamedChainsAndSetNames();
-
 	}
 	
 	private void sortNamedChainsAndSetNames(){

@@ -61,6 +61,17 @@ public class ExceptionDatabase {
 		private List<EqualCauseExceptionChainContainer> knownExceptions = new ArrayList<EqualCauseExceptionChainContainer>();
 		private List<EqualCauseExceptionChainContainer> yetUnknownExceptions = new ArrayList<EqualCauseExceptionChainContainer>();
 		
+		public boolean hasYetUnkownExceptions(){
+			return (yetUnknownExceptions.size() > 0);
+		}
+		public List<EqualCauseExceptionChainContainer> getKnownExceptions() {
+			return knownExceptions;
+		}
+
+		public List<EqualCauseExceptionChainContainer> getYetUnknownExceptions() {
+			return yetUnknownExceptions;
+		}
+
 		public void addKnownException(ExceptionCausedByChain knownException){
 			addExceptionToExceptionChainContainerList(knownException, knownExceptions);
 		}

@@ -2,7 +2,9 @@ package de.smeo.tools.exceptionmonitor.commandline;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.smeo.tools.exceptionmonitor.commandline.ExceptionDatabase.CategorizedExceptions;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
@@ -12,30 +14,48 @@ import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor.FileMonitorState
 public class PeriodicEmailExceptionReport {
 	private static final String FILE_MONITOR_STATES = "FileMonitorStates.cfg";
 	private static final String EXCEPTION_DATABASE = "ExceptionDataBase.cfg";
+	private static final String EMAIL_SERVER = "EmailSettings.properties";
 	
 	private List<String> logFilesToParse = new ArrayList<String>();
-	private List<CategorizedExceptions> allCategorizedExceptions = new ArrayList<CategorizedExceptions>();
+	private Map<File, CategorizedExceptions> foundExceptionsToLogfile = new HashMap<File, CategorizedExceptions>();
 	private String configDirectory;
 	private FileMonitorStateRepository fileMonitorStates;
 	private ExceptionDatabase exceptionDatabase;
+	private EmailDispatcher emailDispatcher;
+	private String targetEmailAdress;
+	
+	
+
+	public PeriodicEmailExceptionReport(String configDirectory) {
+		loadConfigs(configDirectory);
+	}
 	
 	
 	private void parseLogFiles() {
 		for (String currLogFileToParsePath : logFilesToParse){
-			File currLogFileToParse = new File(currLogFileToParsePath);
-			FileMonitorState fileMonitorState = fileMonitorStates.loadFileMonitorState(currLogFileToParse);
-			SingleFileMonitor singleFileMonitor = new SingleFileMonitor(currLogFileToParse);
-			singleFileMonitor.setFileMonitorState(fileMonitorState);
-			List<ExceptionCausedByChain> newExceptions = singleFileMonitor.parseNewFileEntriesAndReturnExceptions();
-			fileMonitorStates.updateFileMonitorState(currLogFileToParse, singleFileMonitor.getFileMonitorState());
-			CategorizedExceptions categorizedExceptions = exceptionDatabase.updateDatabaseAndCategorizeExceptions(currLogFileToParse, newExceptions);
-			allCategorizedExceptions.add(categorizedExceptions);
+			parseLogFile(new File(currLogFileToParsePath));
 		}
 	}
 	
-	private void parseFileListCommand(String string) {
-		// TODO Auto-generated method stub
+	private void parseFileListCommand(String commaSeparatedLogFileList) {
+		String[] filenames = commaSeparatedLogFileList.split(",");
 		
+		for (String currFilename : filenames){
+			logFilesToParse.add(currFilename);
+		}
+		
+	}
+	
+	private void parseLogFile(File logFile){
+		if (logFile.exists()){
+			if (!foundExceptionsToLogfile.containsKey(logFile)){
+				SingleFileMonitor singleFileMonitor = new SingleFileMonitor(logFile);
+				singleFileMonitor.setFileMonitorState(fileMonitorStates.loadFileMonitorState(logFile));
+				List<ExceptionCausedByChain> foundExceptions = singleFileMonitor.parseNewFileEntriesAndReturnExceptions();
+				CategorizedExceptions foundExeptions = exceptionDatabase.updateDatabaseAndCategorizeExceptions(logFile, foundExceptions);
+				foundExceptionsToLogfile.put(logFile, foundExeptions);
+			} 
+		}
 	}
 
 	private void createTemplateConfigsForNonExisting() {
@@ -45,14 +65,23 @@ public class PeriodicEmailExceptionReport {
 
 	private boolean loadConfigs(String configDirectory) {
 		this.configDirectory = configDirectory + File.separatorChar;
-		this.fileMonitorStates = new FileMonitorStateRepository(configDirectory + FILE_MONITOR_STATES);
-		this.exceptionDatabase = new ExceptionDatabase(configDirectory + EXCEPTION_DATABASE);
+		this.fileMonitorStates = new FileMonitorStateRepository(configDirectory + File.separator +  FILE_MONITOR_STATES);
+		this.exceptionDatabase = new ExceptionDatabase(configDirectory + File.separator + EXCEPTION_DATABASE);
 		return true;
 	}
 
 	private void sendEmailReports() {
-		// TODO Auto-generated method stub
-		
+		for (File currLogFile : foundExceptionsToLogfile.keySet()){
+			CategorizedExceptions categorizedExceptions = foundExceptionsToLogfile.get(currLogFile);
+			ExceptionReport newExceptionReport = new ExceptionReport();
+			newExceptionReport.addExceptionContainers(categorizedExceptions.getYetUnknownExceptions(), true);
+			newExceptionReport.addExceptionContainers(categorizedExceptions.getKnownExceptions(), false);
+			String subject = "ExceptionReport: " + currLogFile.getName();
+			if (categorizedExceptions.hasYetUnkownExceptions()){
+				subject += "YET UNKOWN EXCEPTIONS in " + subject;
+			}
+			emailDispatcher.sendEmail(targetEmailAdress, subject, newExceptionReport.toString());
+		}
 	}
 	
 	
@@ -74,21 +103,14 @@ public class PeriodicEmailExceptionReport {
 	}
 	
 	public static void main(String[] args) {
-		PeriodicEmailExceptionReport periodicEmailExceptionReport = new PeriodicEmailExceptionReport();
 		
 		if (args.length != 2){
 			PeriodicEmailExceptionReport.printHelpText();
 		} else {
-			boolean configsLoaded = periodicEmailExceptionReport.loadConfigs(args[1]);
-			if (configsLoaded){
-				periodicEmailExceptionReport.createTemplateConfigsForNonExisting();
-			} else {
-				periodicEmailExceptionReport.parseFileListCommand(args[0]);
+				PeriodicEmailExceptionReport periodicEmailExceptionReport = new PeriodicEmailExceptionReport(args[0]);
+				periodicEmailExceptionReport.parseFileListCommand(args[1]);
 				periodicEmailExceptionReport.parseLogFiles();
 				periodicEmailExceptionReport.sendEmailReports();
 			}
 		}
-		
-	}
-	
 }
