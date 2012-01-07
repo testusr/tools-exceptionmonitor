@@ -132,9 +132,10 @@ public class ExceptionReport {
 		StringBuffer stringBuffer = new StringBuffer();
 		stringBuffer.append("----------------------------------------");
 		stringBuffer.append("Short Description");
-		stringBuffer.append("----------------------------------------");
+		stringBuffer.append("----------------------------------------\n");
 		for (NamedExceptionChain currExceptionChain : namedExceptionChains){
 			stringBuffer.append(currExceptionChain.getShortDescription());
+			stringBuffer.append("\n");
 		}
 		return stringBuffer.toString();
 	}

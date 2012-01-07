@@ -35,6 +35,7 @@ public class EmailDispatcher {
 	public void sendEmail(String receiver, String subject, String messageBody) throws MessagingException{
 		System.out.println("---------------------------------------------------------\n");
 		System.out.println("Sending email: '" + subject + "'\n\n");
+		System.out.println("receiver: '" + receiver + "'\n\n");
 		System.out.println("messageBody: \n" + messageBody + "\n");
 		System.out.println("---------------------------------------------------------\n");
 

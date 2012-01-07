@@ -32,11 +32,12 @@ public class ExceptionDatabase {
 		FileUtils.writeObjectToFile(absFilenameToknownExceptionSamples, storageFile);
 	}
 	
-	private void openOrCreateFile(String storageFile) {
-		File storage = new File(storageFile);
-		if (!storage.exists()){
+	private void openOrCreateFile(String storageFileName) {
+		storageFile = new File(storageFileName);
+		if (!storageFile.exists()){
 			try {
-				storage.createNewFile();
+				storageFile.createNewFile();
+				saveStorageToFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

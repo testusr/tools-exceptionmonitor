@@ -11,7 +11,6 @@ import javax.mail.MessagingException;
 import de.smeo.tools.exceptionmonitor.commandline.ExceptionDatabase.CategorizedExceptions;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor;
-import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor.FileMonitorState;
 
 public class PeriodicEmailExceptionReport {
 	private static final String FILE_MONITOR_STATES = "FileMonitorStates.cfg";
@@ -58,10 +57,13 @@ public class PeriodicEmailExceptionReport {
 						.loadFileMonitorState(logFile));
 				List<ExceptionCausedByChain> foundExceptions = singleFileMonitor
 						.parseNewFileEntriesAndReturnExceptions();
-				CategorizedExceptions foundExeptions = exceptionDatabase
-						.updateDatabaseAndCategorizeExceptions(logFile,
-								foundExceptions);
-				foundExceptionsToLogfile.put(logFile, foundExeptions);
+
+				if (foundExceptions.size() > 0) {
+					CategorizedExceptions foundExeptions = exceptionDatabase
+							.updateDatabaseAndCategorizeExceptions(logFile,
+									foundExceptions);
+					foundExceptionsToLogfile.put(logFile, foundExeptions);
+				}
 			}
 		}
 	}
@@ -83,20 +85,24 @@ public class PeriodicEmailExceptionReport {
 	}
 
 	private void sendEmailReports() throws MessagingException {
-		for (File currLogFile : foundExceptionsToLogfile.keySet()) {
-			CategorizedExceptions categorizedExceptions = foundExceptionsToLogfile
-					.get(currLogFile);
-			ExceptionReport newExceptionReport = new ExceptionReport();
-			newExceptionReport.addExceptionContainers(
-					categorizedExceptions.getYetUnknownExceptions(), true);
-			newExceptionReport.addExceptionContainers(
-					categorizedExceptions.getKnownExceptions(), false);
-			String subject = "ExceptionReport: " + currLogFile.getName();
-			if (categorizedExceptions.hasYetUnkownExceptions()) {
-				subject += "YET UNKOWN EXCEPTIONS in " + subject;
+		if (foundExceptionsToLogfile.keySet().size() > 0) {
+			for (File currLogFile : foundExceptionsToLogfile.keySet()) {
+				CategorizedExceptions categorizedExceptions = foundExceptionsToLogfile
+						.get(currLogFile);
+				ExceptionReport newExceptionReport = new ExceptionReport();
+				newExceptionReport.addExceptionContainers(
+						categorizedExceptions.getYetUnknownExceptions(), true);
+				newExceptionReport.addExceptionContainers(
+						categorizedExceptions.getKnownExceptions(), false);
+				String subject = "ExceptionReport: " + currLogFile.getName();
+				if (categorizedExceptions.hasYetUnkownExceptions()) {
+					subject = "YET UNKOWN EXCEPTIONS in " + subject;
+				}
+				emailDispatcher.sendEmail(targetEmailAdress, subject,
+						newExceptionReport.toString());
 			}
-			emailDispatcher.sendEmail(targetEmailAdress, subject,
-					newExceptionReport.toString());
+		} else {
+			System.out.println("Nothing to report\n");
 		}
 	}
 
@@ -135,6 +141,8 @@ public class PeriodicEmailExceptionReport {
 			} catch (MessagingException e) {
 				e.printStackTrace();
 			}
+			periodicEmailExceptionReport.saveCurrentStateToFiles();
+
 		}
 	}
 }

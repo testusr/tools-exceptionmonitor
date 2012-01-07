@@ -147,8 +147,7 @@ public class SingleFileMonitor {
 	}
 	
 	public static class FileMonitorState implements Serializable {
-		private static final long serialVersionUID = 1L;
-
+		private static final long serialVersionUID = 825051722073708101L;
 		public long lastReadFilePosition = 0;
 		public long lastFileSize;
 	}

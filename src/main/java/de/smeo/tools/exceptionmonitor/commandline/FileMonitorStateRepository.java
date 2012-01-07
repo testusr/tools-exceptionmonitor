@@ -15,7 +15,7 @@ import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor.FileMonitorState
  */
 public class FileMonitorStateRepository {
 	private Map<String, FileMonitorState> filenameToMonitorState = new HashMap<String, FileMonitorState>();
-	private File configFile;
+	private File storageFile;
 	
 	public FileMonitorStateRepository(String configfile) {
 		openOrCreateFile(configfile);
@@ -23,18 +23,19 @@ public class FileMonitorStateRepository {
 	}
 
 	private void loadFileMonitorStatesFromFile(String configfile2) {
-		this.filenameToMonitorState = (Map<String, FileMonitorState>) FileUtils.readObjectFromFile(configFile);
+		this.filenameToMonitorState = (Map<String, FileMonitorState>) FileUtils.readObjectFromFile(storageFile);
 	}
 
 	public void saveToFile() {
-		FileUtils.writeObjectToFile(filenameToMonitorState, configFile);
+		FileUtils.writeObjectToFile(filenameToMonitorState, storageFile);
 	}
 	
-	private void openOrCreateFile(String storageFile) {
-		File storage = new File(storageFile);
-		if (!storage.exists()){
+	private void openOrCreateFile(String storageFileName) {
+		this.storageFile = new File(storageFileName);
+		if (!storageFile.exists()){
 			try {
-				storage.createNewFile();
+				storageFile.createNewFile();
+				saveToFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
