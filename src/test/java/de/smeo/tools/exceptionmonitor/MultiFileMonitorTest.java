@@ -1,25 +1,9 @@
 package de.smeo.tools.exceptionmonitor;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
-import de.smeo.tools.exceptionmonitor.reporting.EmailAdress;
-import de.smeo.tools.exceptionmonitor.reporting.EmailOutBox;
-import de.smeo.tools.exceptionmonitor.reporting.MonitoredFile;
-import de.smeo.tools.exceptionmonitor.reporting.ReportedException;
-import de.smeo.tools.exceptionmonitor.reporting.EmailOutBox.ExceptionReportEmail;
 
 public class MultiFileMonitorTest {
 	
@@ -94,36 +78,36 @@ public class MultiFileMonitorTest {
 			"	... 11 more\n" +
 			" ";
 
-	@Test
-	public void testReportedExceptionWithSameRootCauseAreEqual(){
-		ExceptionParser exceptionParser = new ExceptionParser();
-		exceptionParser.parse(EXCEPTION1_ROOTCAUSE1);
-		ExceptionCausedByChain exceptionCausedByChain = exceptionParser.getExceptionChains().get(0);
-		ReportedException reportedException = new ReportedException(exceptionCausedByChain);
-
-		ExceptionParser exceptionParser2 = new ExceptionParser();
-		exceptionParser2.parse(EXCEPTION2_ROOTCAUSE1);
-		ExceptionCausedByChain exceptionCausedByChain2 = exceptionParser.getExceptionChains().get(0);
-		ReportedException reportedException2 = new ReportedException(exceptionCausedByChain2);
-
-		assertTrue(reportedException.hasEqualRootCause(reportedException2));
-	}
-	
-
-	@Test
-	public void testReportedExceptionWithdiffRootCauseAreNotEqual(){
-		ExceptionParser exceptionParser = new ExceptionParser();
-		exceptionParser.parse(EXCEPTION1_ROOTCAUSE1);
-		ExceptionCausedByChain exceptionCausedByChain = exceptionParser.getExceptionChains().get(0);
-		ReportedException reportedException = new ReportedException(exceptionCausedByChain);
-
-		ExceptionParser exceptionParser2 = new ExceptionParser();
-		exceptionParser2.parse(EXCEPTION3_ROOTCAUSE2);
-		ExceptionCausedByChain exceptionCausedByChain2 = exceptionParser.getExceptionChains().get(0);
-		ReportedException reportedException2 = new ReportedException(exceptionCausedByChain2);
-
-		assertTrue(reportedException.hasEqualRootCause(reportedException2));
-	}
+//	@Test
+//	public void testReportedExceptionWithSameRootCauseAreEqual(){
+//		ExceptionParser exceptionParser = new ExceptionParser();
+//		exceptionParser.parse(EXCEPTION1_ROOTCAUSE1);
+//		ExceptionCausedByChain exceptionCausedByChain = exceptionParser.getExceptionChains().get(0);
+//		ReportedException reportedException = new ReportedException(exceptionCausedByChain);
+//
+//		ExceptionParser exceptionParser2 = new ExceptionParser();
+//		exceptionParser2.parse(EXCEPTION2_ROOTCAUSE1);
+//		ExceptionCausedByChain exceptionCausedByChain2 = exceptionParser.getExceptionChains().get(0);
+//		ReportedException reportedException2 = new ReportedException(exceptionCausedByChain2);
+//
+//		assertTrue(reportedException.hasEqualRootCause(reportedException2));
+//	}
+//	
+//
+//	@Test
+//	public void testReportedExceptionWithdiffRootCauseAreNotEqual(){
+//		ExceptionParser exceptionParser = new ExceptionParser();
+//		exceptionParser.parse(EXCEPTION1_ROOTCAUSE1);
+//		ExceptionCausedByChain exceptionCausedByChain = exceptionParser.getExceptionChains().get(0);
+//		ReportedException reportedException = new ReportedException(exceptionCausedByChain);
+//
+//		ExceptionParser exceptionParser2 = new ExceptionParser();
+//		exceptionParser2.parse(EXCEPTION3_ROOTCAUSE2);
+//		ExceptionCausedByChain exceptionCausedByChain2 = exceptionParser.getExceptionChains().get(0);
+//		ReportedException reportedException2 = new ReportedException(exceptionCausedByChain2);
+//
+//		assertTrue(reportedException.hasEqualRootCause(reportedException2));
+//	}
 
 	
 }

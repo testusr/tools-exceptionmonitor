@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+
 import de.smeo.tools.exceptionmonitor.commandline.ExceptionDatabase.CategorizedExceptions;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor;
@@ -58,19 +60,20 @@ public class PeriodicEmailExceptionReport {
 		}
 	}
 
-	private void createTemplateConfigsForNonExisting() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private boolean loadConfigs(String configDirectory) {
 		this.configDirectory = configDirectory + File.separatorChar;
 		this.fileMonitorStates = new FileMonitorStateRepository(configDirectory + File.separator +  FILE_MONITOR_STATES);
 		this.exceptionDatabase = new ExceptionDatabase(configDirectory + File.separator + EXCEPTION_DATABASE);
+		this.emailDispatcher = new EmailDispatcher(configDirectory + File.separator + EMAIL_SERVER);
 		return true;
 	}
+	
+	private void saveCurrentStateToFiles() {
+		this.fileMonitorStates.saveToFile();
+		this.exceptionDatabase.saveStorageToFile();
+	}
 
-	private void sendEmailReports() {
+	private void sendEmailReports() throws MessagingException {
 		for (File currLogFile : foundExceptionsToLogfile.keySet()){
 			CategorizedExceptions categorizedExceptions = foundExceptionsToLogfile.get(currLogFile);
 			ExceptionReport newExceptionReport = new ExceptionReport();
@@ -110,7 +113,14 @@ public class PeriodicEmailExceptionReport {
 				PeriodicEmailExceptionReport periodicEmailExceptionReport = new PeriodicEmailExceptionReport(args[0]);
 				periodicEmailExceptionReport.parseFileListCommand(args[1]);
 				periodicEmailExceptionReport.parseLogFiles();
-				periodicEmailExceptionReport.sendEmailReports();
+				try {
+					periodicEmailExceptionReport.sendEmailReports();
+					
+					// only save states if emails where send successfully
+					periodicEmailExceptionReport.saveCurrentStateToFiles();
+				} catch (MessagingException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 }

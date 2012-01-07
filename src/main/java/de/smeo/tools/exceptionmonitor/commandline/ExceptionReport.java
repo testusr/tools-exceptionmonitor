@@ -36,7 +36,11 @@ public class ExceptionReport {
 		}
 
 		public String getShortDescription() {
-			return "Exception[" + name + "/ count: "+equalCauseExceptionChainContainer.size()+"] - " + equalCauseExceptionChainContainer.getFirstExceptionName();
+			String shortDescription = "Exception[" + name + "/ count: "+equalCauseExceptionChainContainer.size()+"] - " + equalCauseExceptionChainContainer.getFirstExceptionName();
+			if (exceptionOccuringTheFirstTime != null && exceptionOccuringTheFirstTime){
+				shortDescription = "FIRST OCCURANCE - " + shortDescription; 
+			}
+			return shortDescription;
 		}
 		
 		public String getFullDescription() {

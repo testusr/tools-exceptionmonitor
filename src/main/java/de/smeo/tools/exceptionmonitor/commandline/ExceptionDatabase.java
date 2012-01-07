@@ -1,11 +1,13 @@
 package de.smeo.tools.exceptionmonitor.commandline;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.smeo.tools.exceptionmonitor.common.FileUtils;
 import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 
@@ -15,10 +17,30 @@ import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
  */
 public class ExceptionDatabase {
 	private Map<String, List<ExceptionCausedByChain>> absFilenameToknownExceptionSamples = new HashMap<String, List<ExceptionCausedByChain>>();
-
+	private File storageFile;
 	
-	public ExceptionDatabase(String filename) {
-		
+	public ExceptionDatabase(String storageFile) {
+		openOrCreateFile(storageFile);
+		loadStorageFromFile();
+	}
+
+	private void loadStorageFromFile() {
+		absFilenameToknownExceptionSamples = (Map<String, List<ExceptionCausedByChain>> ) FileUtils.readObjectFromFile(storageFile);
+	}
+	
+	public void saveStorageToFile() {
+		FileUtils.writeObjectToFile(absFilenameToknownExceptionSamples, storageFile);
+	}
+	
+	private void openOrCreateFile(String storageFile) {
+		File storage = new File(storageFile);
+		if (!storage.exists()){
+			try {
+				storage.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public CategorizedExceptions updateDatabaseAndCategorizeExceptions(
@@ -92,6 +114,4 @@ public class ExceptionDatabase {
 			}
 		}
 	}
-
-	
 }

@@ -1,24 +1,11 @@
 package de.smeo.tools.exceptionmonitor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
-import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor;
-import de.smeo.tools.exceptionmonitor.reporting.MonitoredFile;
-import de.smeo.tools.exceptionmonitor.reporting.SingleFileExceptionReport;
 
 
 public class TestSingleFileMonitor {
