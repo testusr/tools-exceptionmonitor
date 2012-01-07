@@ -115,14 +115,15 @@ public class ExceptionReport {
 
 	private String getFullDescription() {
 		StringBuffer stringBuffer = new StringBuffer();
-		stringBuffer.append("----------------------------------------");
-		stringBuffer.append("Full Description");
-		stringBuffer.append("----------------------------------------");
-		stringBuffer.append("Note: the exception stacktraces present the");
-		stringBuffer.append("first occuring exception, the comments for ");
-		stringBuffer.append("the other listed occurances can be different.");
+		stringBuffer.append("----------------------------------------\n");
+		stringBuffer.append("Full Description\n");
+		stringBuffer.append("----------------------------------------\n");
+		stringBuffer.append("Note: the exception stacktraces present the\n");
+		stringBuffer.append("first occuring exception, the comments for \n");
+		stringBuffer.append("the other listed occurances can be different.\n");
 		stringBuffer.append("----------------------------------------\n");
 		for (NamedExceptionChain currExceptionChain : namedExceptionChains){
+			stringBuffer.append("\n");
 			stringBuffer.append(currExceptionChain.getFullDescription());
 		}
 		return stringBuffer.toString();
@@ -130,8 +131,8 @@ public class ExceptionReport {
 
 	private String getShortDescription() {
 		StringBuffer stringBuffer = new StringBuffer();
-		stringBuffer.append("----------------------------------------");
-		stringBuffer.append("Short Description");
+		stringBuffer.append("----------------------------------------\n");
+		stringBuffer.append("Short Description\n");
 		stringBuffer.append("----------------------------------------\n");
 		for (NamedExceptionChain currExceptionChain : namedExceptionChains){
 			stringBuffer.append(currExceptionChain.getShortDescription());

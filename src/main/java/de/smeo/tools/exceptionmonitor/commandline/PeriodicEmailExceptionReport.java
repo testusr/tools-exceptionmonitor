@@ -59,10 +59,11 @@ public class PeriodicEmailExceptionReport {
 						.parseNewFileEntriesAndReturnExceptions();
 
 				if (foundExceptions.size() > 0) {
-					CategorizedExceptions foundExeptions = exceptionDatabase
-							.updateDatabaseAndCategorizeExceptions(logFile,
+					CategorizedExceptions categorizedFoundExeptions = exceptionDatabase
+							.categorizeExceptions(logFile,
 									foundExceptions);
-					foundExceptionsToLogfile.put(logFile, foundExeptions);
+					foundExceptionsToLogfile.put(logFile, categorizedFoundExeptions);
+					exceptionDatabase.updateDatabase(logFile, foundExceptions);
 				}
 			}
 		}

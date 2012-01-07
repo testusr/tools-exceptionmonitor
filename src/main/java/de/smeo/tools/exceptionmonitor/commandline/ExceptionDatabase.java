@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.smeo.tools.exceptionmonitor.commandline.ExceptionDatabase.CategorizedExceptions;
 import de.smeo.tools.exceptionmonitor.common.FileUtils;
 import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
@@ -44,7 +45,27 @@ public class ExceptionDatabase {
 		}
 	}
 
-	public CategorizedExceptions updateDatabaseAndCategorizeExceptions(
+	public void updateDatabase(
+			File file,
+			List<ExceptionCausedByChain> newExceptions) {
+		
+		for (ExceptionCausedByChain currExceptionCausedByChain : newExceptions){
+			boolean isKnownException = false;
+	
+			List<ExceptionCausedByChain> exceptionCausedByChainsForFile = absFilenameToknownExceptionSamples.get(file.getAbsolutePath());
+			if (exceptionCausedByChainsForFile == null){
+				exceptionCausedByChainsForFile = new ArrayList<ExceptionCausedByChain>();
+				absFilenameToknownExceptionSamples.put(file.getAbsolutePath(), exceptionCausedByChainsForFile);
+			}
+			
+			isKnownException = listContainsExceptionWithSameRootCause(currExceptionCausedByChain, exceptionCausedByChainsForFile);
+			if (!isKnownException){
+				exceptionCausedByChainsForFile.add(currExceptionCausedByChain);
+			}
+		}
+	}
+
+	public CategorizedExceptions categorizeExceptions(
 			File file,
 			List<ExceptionCausedByChain> newExceptions) {
 		
@@ -64,13 +85,12 @@ public class ExceptionDatabase {
 				categorizedExceptions.addKnownException(currExceptionCausedByChain);
 			} else {
 				categorizedExceptions.addYetUnkownException(currExceptionCausedByChain);
-				exceptionCausedByChainsForFile.add(currExceptionCausedByChain);
 			}
 		}
 		
 		return categorizedExceptions;
 	}
-	
+
 	private boolean listContainsExceptionWithSameRootCause(ExceptionCausedByChain exception, List<ExceptionCausedByChain> exceptionList){
 		for (ExceptionCausedByChain currExceptionCausedByChain : exceptionList){
 			if (currExceptionCausedByChain.hasEqualRootCause(exception)){
@@ -115,4 +135,5 @@ public class ExceptionDatabase {
 			}
 		}
 	}
+
 }

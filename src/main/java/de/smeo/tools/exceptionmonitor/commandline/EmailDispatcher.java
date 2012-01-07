@@ -2,7 +2,6 @@ package de.smeo.tools.exceptionmonitor.commandline;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
@@ -34,8 +33,8 @@ public class EmailDispatcher {
 	
 	public void sendEmail(String receiver, String subject, String messageBody) throws MessagingException{
 		System.out.println("---------------------------------------------------------\n");
-		System.out.println("Sending email: '" + subject + "'\n\n");
-		System.out.println("receiver: '" + receiver + "'\n\n");
+		System.out.println("Sending email: '" + subject + "'\n");
+		System.out.println("receiver: '" + receiver + "'\n");
 		System.out.println("messageBody: \n" + messageBody + "\n");
 		System.out.println("---------------------------------------------------------\n");
 
