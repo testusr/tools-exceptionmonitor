@@ -10,8 +10,8 @@ import javax.mail.MessagingException;
 
 import de.smeo.tools.exceptionmonitor.common.EmailDispatcher;
 import de.smeo.tools.exceptionmonitor.common.ExceptionDatabase;
-import de.smeo.tools.exceptionmonitor.common.FileMonitorStateRepository;
 import de.smeo.tools.exceptionmonitor.common.ExceptionDatabase.CategorizedExceptions;
+import de.smeo.tools.exceptionmonitor.common.FileMonitorStateRepository;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor;
 
