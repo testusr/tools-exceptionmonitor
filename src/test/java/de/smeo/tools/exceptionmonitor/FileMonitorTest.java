@@ -92,171 +92,171 @@ public class FileMonitorTest {
 		}
 	}
 
-	@Test
-	public void testExcpetionInLogFile() {
-		FileMonitorFixture fileMonitor = new FileMonitorFixture();
-		fileMonitor.init();
-		
-		fileMonitor.createReport();
-		fileMonitor.verifyReportIsEmpty();
-		
-		fileMonitor.appendToLogFileA(EXCEPTION1_ROOTCAUSE1);
-		
-		fileMonitor.appendToLogFileB(EXCEPTION1_ROOTCAUSE1);
-		fileMonitor.appendToLogFileB(EXCEPTION2_ROOTCAUSE1);
-
-		fileMonitor.createReport();
-		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameA(), 1);
-		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameB(), 2);
-		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameA(), 1);
-		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameB(), 1);
-		fileMonitor.verifyReportContainsFileWithDoesNotContainLogFile(fileMonitor.getLogFilenNameC());
-	}
-
-
-
-	@Test
-	public void testReportUpdates(){
-		FileMonitorFixture fileMonitor = new FileMonitorFixture();
-		fileMonitor.init();
-		
-		fileMonitor.appendToLogFileA(EXCEPTION1_ROOTCAUSE1);
-		fileMonitor.appendToLogFileB(EXCEPTION1_ROOTCAUSE1);
-		fileMonitor.createReport();
-		
-		fileMonitor.appendToLogFileB(EXCEPTION2_ROOTCAUSE1);
-		fileMonitor.appendToLogFileB(EXCEPTION3_ROOTCAUSE2);
-		fileMonitor.appendToLogFileC(EXCEPTION2_ROOTCAUSE1);
-		fileMonitor.createReport();
-
-		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameB(), 2);
-		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameC(), 1);
+//	@Test
+//	public void testExcpetionInLogFile() {
+//		FileMonitorFixture fileMonitor = new FileMonitorFixture();
+//		fileMonitor.init();
+//		
+//		fileMonitor.createReport();
+//		fileMonitor.verifyReportIsEmpty();
+//		
+//		fileMonitor.appendToLogFileA(EXCEPTION1_ROOTCAUSE1);
+//		
+//		fileMonitor.appendToLogFileB(EXCEPTION1_ROOTCAUSE1);
+//		fileMonitor.appendToLogFileB(EXCEPTION2_ROOTCAUSE1);
+//
+//		fileMonitor.createReport();
+//		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameA(), 1);
+//		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameB(), 2);
+//		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameA(), 1);
+//		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameB(), 1);
+//		fileMonitor.verifyReportContainsFileWithDoesNotContainLogFile(fileMonitor.getLogFilenNameC());
+//	}
+//
+//
+//
+//	@Test
+//	public void testReportUpdates(){
+//		FileMonitorFixture fileMonitor = new FileMonitorFixture();
+//		fileMonitor.init();
+//		
+//		fileMonitor.appendToLogFileA(EXCEPTION1_ROOTCAUSE1);
+//		fileMonitor.appendToLogFileB(EXCEPTION1_ROOTCAUSE1);
+//		fileMonitor.createReport();
+//		
+//		fileMonitor.appendToLogFileB(EXCEPTION2_ROOTCAUSE1);
+//		fileMonitor.appendToLogFileB(EXCEPTION3_ROOTCAUSE2);
+//		fileMonitor.appendToLogFileC(EXCEPTION2_ROOTCAUSE1);
+//		fileMonitor.createReport();
+//
+//		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameB(), 2);
+//		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameC(), 1);
+//	
+//		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameC(), 1);
+//		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameB(), 1);
+//		
+//		fileMonitor.verifyReportContainsFileWithNoOfUnSightedRootCauses(fileMonitor.getLogFilenNameB(), 1);
+//		
+//
+//	}
+//	
+//	@Test
+//	public void testReportUpdatesWithRollingFiles(){
+//		FileMonitorFixture fileMonitor = new FileMonitorFixture();
+//		fileMonitor.init();
+//		
+//		fileMonitor.appendToLogFileB(EXCEPTION1_ROOTCAUSE1);
+//		fileMonitor.createReport();
+//		
+//		fileMonitor.reCreateLogFileB();
+//		fileMonitor.appendToLogFileB(EXCEPTION2_ROOTCAUSE1);
+//		fileMonitor.appendToLogFileB(EXCEPTION3_ROOTCAUSE2);
+//		fileMonitor.createReport();
+//
+//		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameB(), 2);
+//		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameB(), 1);
+//	}
 	
-		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameC(), 1);
-		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameB(), 1);
-		
-		fileMonitor.verifyReportContainsFileWithNoOfUnSightedRootCauses(fileMonitor.getLogFilenNameB(), 1);
-		
-
-	}
-	
-	@Test
-	public void testReportUpdatesWithRollingFiles(){
-		FileMonitorFixture fileMonitor = new FileMonitorFixture();
-		fileMonitor.init();
-		
-		fileMonitor.appendToLogFileB(EXCEPTION1_ROOTCAUSE1);
-		fileMonitor.createReport();
-		
-		fileMonitor.reCreateLogFileB();
-		fileMonitor.appendToLogFileB(EXCEPTION2_ROOTCAUSE1);
-		fileMonitor.appendToLogFileB(EXCEPTION3_ROOTCAUSE2);
-		fileMonitor.createReport();
-
-		fileMonitor.verifyReportContainsFileWithNoOfExceptions(fileMonitor.getLogFilenNameB(), 2);
-		fileMonitor.verifyReportContainsFileWithNoOfUnknownRootCauses(fileMonitor.getLogFilenNameB(), 1);
-	}
-	
-	public class FileMonitorFixture extends MultiFileMonitor {
-		private File logFileA = createTempFile("logFileA");
-		private File logFileB = createTempFile("logFileB");
-		private File logFileC = createTempFile("logFileC");
-		
-		private MultiFileExceptionReport multiFileExceptionReport;
-
-		public void init(){
-			addMonitoredLogFile(new MonitoredFile(0, getLogFilenNameA()));
-			addMonitoredLogFile(new MonitoredFile(0, getLogFilenNameB()));
-			addMonitoredLogFile(new MonitoredFile(0, getLogFilenNameC()));
-		}
-
-		public void reCreateLogFileB() {
-			logFileB.delete();
-			try {
-				logFileB.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-				Assert.fail();
-			}	
-		}
-
-		public void appendToLogFileA(String logContent) {
-			appendLogFile(logFileA, logContent);
-		}
-
-		public void appendToLogFileB(String logContent) {
-			appendLogFile(logFileB, logContent);			
-		}
-
-		public void appendToLogFileC(String logContent) {
-			appendLogFile(logFileC, logContent);			
-		}
-
-		private void appendLogFile(File logFile, String logFileContent) {
-			if (logFileContent != null){
-		        BufferedWriter out;
-				try {
-					out = new BufferedWriter(new FileWriter(logFile, true));
-					out.write(logFileContent);
-					out.close();
-				} catch (IOException e) {
-					throw new IllegalArgumentException(e);
-				}
-			}
-		}
-
-		public void createReport() {
-			checkFilesIfNecessary();
-			this.multiFileExceptionReport = createExceptionReportUpdate();
-		}
-
-		public String getLogFilenNameA() {
-			return logFileA.getAbsolutePath();
-		}
-
-		public String getLogFilenNameB() {
-			return logFileB.getAbsolutePath();
-		}
-
-		public String getLogFilenNameC() {
-			return logFileC.getAbsolutePath();
-		}
-
-		public void verifyReportContainsFileWithDoesNotContainLogFile(
-				String logFilenName) {
-			SingleFileExceptionReport singleFileExceptionReport = multiFileExceptionReport.getSingleFileReportForFilename(logFilenName);
-			assertNull(singleFileExceptionReport);
-		}
-
-		public void verifyReportContainsFileWithNoOfExceptions(
-				String logFilenName, int expectedNoOfExceptions) {
-			SingleFileExceptionReport singleFileExceptionReport = multiFileExceptionReport.getSingleFileReportForFilename(logFilenName);
-
-			assertNotNull(singleFileExceptionReport);
-			assertEquals(expectedNoOfExceptions, singleFileExceptionReport.getTotalNoOfExceptions());
-		}
-
-		public void verifyReportContainsFileWithNoOfUnSightedRootCauses(
-				String logFilenName, int expectedNoOfSightedRootCauses) {
-			SingleFileExceptionReport singleFileExceptionReport = multiFileExceptionReport.getSingleFileReportForFilename(logFilenName);
-
-			assertNotNull(singleFileExceptionReport);
-			assertEquals(expectedNoOfSightedRootCauses, singleFileExceptionReport.getUnSightedExceptions().size());
-		}
-
-		public void verifyReportContainsFileWithNoOfUnknownRootCauses(
-				String logFilenName, int expectedNoOfUnkownRootCauses) {
-			SingleFileExceptionReport singleFileExceptionReport = multiFileExceptionReport.getSingleFileReportForFilename(logFilenName);
-
-			assertNotNull(singleFileExceptionReport);
-			assertEquals(expectedNoOfUnkownRootCauses, singleFileExceptionReport.getUnkownExceptions().size());
-		}
-		
-		
-
-		public void verifyReportIsEmpty() {
-			assertTrue(multiFileExceptionReport.isEmpty());
-		}
-
-	}
+//	public class FileMonitorFixture extends MultiFileMonitor {
+//		private File logFileA = createTempFile("logFileA");
+//		private File logFileB = createTempFile("logFileB");
+//		private File logFileC = createTempFile("logFileC");
+//		
+//		private MultiFileExceptionReport multiFileExceptionReport;
+//
+//		public void init(){
+//			addMonitoredLogFile(new MonitoredFile(0, getLogFilenNameA()));
+//			addMonitoredLogFile(new MonitoredFile(0, getLogFilenNameB()));
+//			addMonitoredLogFile(new MonitoredFile(0, getLogFilenNameC()));
+//		}
+//
+//		public void reCreateLogFileB() {
+//			logFileB.delete();
+//			try {
+//				logFileB.createNewFile();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				Assert.fail();
+//			}	
+//		}
+//
+//		public void appendToLogFileA(String logContent) {
+//			appendLogFile(logFileA, logContent);
+//		}
+//
+//		public void appendToLogFileB(String logContent) {
+//			appendLogFile(logFileB, logContent);			
+//		}
+//
+//		public void appendToLogFileC(String logContent) {
+//			appendLogFile(logFileC, logContent);			
+//		}
+//
+//		private void appendLogFile(File logFile, String logFileContent) {
+//			if (logFileContent != null){
+//		        BufferedWriter out;
+//				try {
+//					out = new BufferedWriter(new FileWriter(logFile, true));
+//					out.write(logFileContent);
+//					out.close();
+//				} catch (IOException e) {
+//					throw new IllegalArgumentException(e);
+//				}
+//			}
+//		}
+//
+//		public void createReport() {
+//			checkFilesIfNecessary();
+//			this.multiFileExceptionReport = createExceptionReportUpdate();
+//		}
+//
+//		public String getLogFilenNameA() {
+//			return logFileA.getAbsolutePath();
+//		}
+//
+//		public String getLogFilenNameB() {
+//			return logFileB.getAbsolutePath();
+//		}
+//
+//		public String getLogFilenNameC() {
+//			return logFileC.getAbsolutePath();
+//		}
+//
+//		public void verifyReportContainsFileWithDoesNotContainLogFile(
+//				String logFilenName) {
+//			SingleFileExceptionReport singleFileExceptionReport = multiFileExceptionReport.getSingleFileReportForFilename(logFilenName);
+//			assertNull(singleFileExceptionReport);
+//		}
+//
+//		public void verifyReportContainsFileWithNoOfExceptions(
+//				String logFilenName, int expectedNoOfExceptions) {
+//			SingleFileExceptionReport singleFileExceptionReport = multiFileExceptionReport.getSingleFileReportForFilename(logFilenName);
+//
+//			assertNotNull(singleFileExceptionReport);
+//			assertEquals(expectedNoOfExceptions, singleFileExceptionReport.getTotalNoOfExceptions());
+//		}
+//
+//		public void verifyReportContainsFileWithNoOfUnSightedRootCauses(
+//				String logFilenName, int expectedNoOfSightedRootCauses) {
+//			SingleFileExceptionReport singleFileExceptionReport = multiFileExceptionReport.getSingleFileReportForFilename(logFilenName);
+//
+//			assertNotNull(singleFileExceptionReport);
+//			assertEquals(expectedNoOfSightedRootCauses, singleFileExceptionReport.getUnSightedExceptions().size());
+//		}
+//
+//		public void verifyReportContainsFileWithNoOfUnknownRootCauses(
+//				String logFilenName, int expectedNoOfUnkownRootCauses) {
+//			SingleFileExceptionReport singleFileExceptionReport = multiFileExceptionReport.getSingleFileReportForFilename(logFilenName);
+//
+//			assertNotNull(singleFileExceptionReport);
+//			assertEquals(expectedNoOfUnkownRootCauses, singleFileExceptionReport.getUnkownExceptions().size());
+//		}
+//		
+//		
+//
+//		public void verifyReportIsEmpty() {
+//			assertTrue(multiFileExceptionReport.isEmpty());
+//		}
+//
+//	}
 }

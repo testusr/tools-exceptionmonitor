@@ -169,165 +169,145 @@ public class TestSingleFileMonitor {
 		}
 	}
 	
-	@Test
-	public void testRunCheckIfNecessary() {
-		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(checkIntervalInMs);
-		long currentTime = System.currentTimeMillis();
-		
-		singleFileMonitorTestFixture.setTime(currentTime);
-		assertTrue(singleFileMonitorTestFixture.getLastFileCheckTime() < 0);
-		
-		singleFileMonitorTestFixture.parseNewFileEntriesIfNecessary();
-		assertEquals(singleFileMonitorTestFixture.getLastFileCheckTime(), currentTime);
-
-		singleFileMonitorTestFixture.parseNewFileEntriesIfNecessary();
-		assertEquals(singleFileMonitorTestFixture.getLastFileCheckTime(), currentTime);
-
-		singleFileMonitorTestFixture.setTime(currentTime + checkIntervalInMs);
-		
-		singleFileMonitorTestFixture.parseNewFileEntriesIfNecessary();
-		assertEquals(singleFileMonitorTestFixture.getLastFileCheckTime(), (currentTime + checkIntervalInMs));
-		
-	}
 	
-	@Test
-	public void testReadingExceptionWithinTwoFileChecks() throws IOException{
-		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(checkIntervalInMs);
+//	@Test
+//	public void testReadingExceptionWithinTwoFileChecks() throws IOException{
+//		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(checkIntervalInMs);
+//
+//		singleFileMonitorTestFixture.writeToFile(ONE_AND_A_HALF_EXCEPTIONS);
+//		List<ExceptionCausedByChain> loggedExceptionChains = singleFileMonitorTestFixture.parseNewFileEntriesAndReturnExceptions();
+//		
+//		loggedExceptionChains = singleFileMonitorTestFixture.parseNewFileEntriesAndReturnExceptions();
+//		assertEquals(0, loggedExceptionChains.size());
+//
+//		singleFileMonitorTestFixture.writeToFile(SECOND_HALF);
+//		loggedExceptionChains = singleFileMonitorTestFixture.parseNewFileEntriesAndReturnExceptions();
+//		assertEquals(2, loggedExceptionChains.size());
+//	}
+//	
+//	@Test
+//	public void testTwoExceptionsWithSameRootCauseInTwoFileChecks() throws IOException{
+//		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
+//
+//		singleFileMonitorTestFixture.writeToFile(EXCEPTION1_ROOTCAUSE_1);
+//
+//		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
+//
+//		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
+//		singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
+//
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
+//		
+//	}
+//
+//	@Test
+//	public void testTwoExceptionsWithSameRootCauseInOneFileCheck() throws IOException{
+//		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
+//
+//		singleFileMonitorTestFixture.writeToFile(EXCEPTION1_ROOTCAUSE_1);
+//		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
+//
+//		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
+//		assertEquals(2, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
+//		
+//		
+//	}
+//
+//	@Test 
+//	public void testTwoExceptionsWithDifferentRootCauseInTwoFileChecks() throws IOException{
+//		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
+//
+//		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
+//		
+//		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
+//		
+//		singleFileMonitorTestFixture.writeToFile(EXCEPTION3_ROOTCAUSE_2);
+//
+//		singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
+//	}
+//
+//	@Test 
+//	public void testTwoExceptionsWithDifferentRootCauseInOneFileChecks() throws IOException{
+//		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
+//
+//		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
+//		singleFileMonitorTestFixture.writeToFile(EXCEPTION3_ROOTCAUSE_2);
+//
+//		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
+//		
+//		assertEquals(2, singleFileExceptionReport.getUnkownExceptions().size());
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
+//		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(1).occuranceCount());
+//	}
+//	
+//	@Test
+//	public void testGetNextLogFileChunk() throws IOException{
+//		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(0);
+//		
+//		StringBuffer srcStringBuffer = new StringBuffer();
+//		StringBuffer destStringBuffer = new StringBuffer();
+//		
+//		for (int i=0; i < 20; i++){
+//			srcStringBuffer.append(EXCEPTION1_ROOTCAUSE_1);
+//		}
+//		srcStringBuffer.append("\n\n\n");
+//		
+//		singleFileMonitorTestFixture.writeToFile(srcStringBuffer.toString());
+//		
+//		String fileChunk = null;
+//		while ((fileChunk = singleFileMonitorTestFixture.getNextLogFileChunk()) != null){
+//			destStringBuffer.append(fileChunk);
+//		}
+//		
+//		assertEquals(srcStringBuffer.toString(), destStringBuffer.toString());
+//		
+//	}
 
-		singleFileMonitorTestFixture.writeToFile(ONE_AND_A_HALF_EXCEPTIONS);
-		List<ExceptionCausedByChain> loggedExceptionChains = singleFileMonitorTestFixture.parseNewFileEntriesAndReturnExceptions();
-		
-		loggedExceptionChains = singleFileMonitorTestFixture.parseNewFileEntriesAndReturnExceptions();
-		assertEquals(0, loggedExceptionChains.size());
-
-		singleFileMonitorTestFixture.writeToFile(SECOND_HALF);
-		loggedExceptionChains = singleFileMonitorTestFixture.parseNewFileEntriesAndReturnExceptions();
-		assertEquals(2, loggedExceptionChains.size());
-	}
-	
-	@Test
-	public void testTwoExceptionsWithSameRootCauseInTwoFileChecks() throws IOException{
-		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
-
-		singleFileMonitorTestFixture.writeToFile(EXCEPTION1_ROOTCAUSE_1);
-
-		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
-
-		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
-		singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
-
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
-		
-	}
-
-	@Test
-	public void testTwoExceptionsWithSameRootCauseInOneFileCheck() throws IOException{
-		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
-
-		singleFileMonitorTestFixture.writeToFile(EXCEPTION1_ROOTCAUSE_1);
-		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
-
-		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(2, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
-		
-		
-	}
-
-	@Test 
-	public void testTwoExceptionsWithDifferentRootCauseInTwoFileChecks() throws IOException{
-		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
-
-		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
-		
-		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
-		
-		singleFileMonitorTestFixture.writeToFile(EXCEPTION3_ROOTCAUSE_2);
-
-		singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
-	}
-
-	@Test 
-	public void testTwoExceptionsWithDifferentRootCauseInOneFileChecks() throws IOException{
-		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(-1);
-
-		singleFileMonitorTestFixture.writeToFile(EXCEPTION2_ROOTCAUSE_1);
-		singleFileMonitorTestFixture.writeToFile(EXCEPTION3_ROOTCAUSE_2);
-
-		SingleFileExceptionReport singleFileExceptionReport = singleFileMonitorTestFixture.getExecutionReportAndSeparateExceptions();
-		
-		assertEquals(2, singleFileExceptionReport.getUnkownExceptions().size());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(0).occuranceCount());
-		assertEquals(1, singleFileExceptionReport.getUnkownExceptions().get(1).occuranceCount());
-	}
-	
-	@Test
-	public void testGetNextLogFileChunk() throws IOException{
-		SingleFileMonitorTestFixture singleFileMonitorTestFixture = new SingleFileMonitorTestFixture(0);
-		
-		StringBuffer srcStringBuffer = new StringBuffer();
-		StringBuffer destStringBuffer = new StringBuffer();
-		
-		for (int i=0; i < 20; i++){
-			srcStringBuffer.append(EXCEPTION1_ROOTCAUSE_1);
-		}
-		srcStringBuffer.append("\n\n\n");
-		
-		singleFileMonitorTestFixture.writeToFile(srcStringBuffer.toString());
-		
-		String fileChunk = null;
-		while ((fileChunk = singleFileMonitorTestFixture.getNextLogFileChunk()) != null){
-			destStringBuffer.append(fileChunk);
-		}
-		
-		assertEquals(srcStringBuffer.toString(), destStringBuffer.toString());
-		
-	}
-
-	private class SingleFileMonitorTestFixture extends SingleFileMonitor {
-		
-		private long time = System.currentTimeMillis();
-		
-		public SingleFileMonitorTestFixture(long checkIntervalInMs) {
-			super(new MonitoredFile(checkIntervalInMs, createTempFile().getAbsolutePath()));
-		}
-
-		public void writeToFile(String logFileContent) throws IOException {
-	        BufferedWriter out;
-			out = new BufferedWriter(new FileWriter(getMonitoredFile().getFilename(), true));
-	        out.write(logFileContent);
-	        out.close();
-
-		}
-		
-		@Override
-		public String getNextLogFileChunk() {
-			return super.getNextLogFileChunk();
-		}
-
-		private SingleFileExceptionReport getExecutionReportAndSeparateExceptions() {
-			parseNewFileEntriesIfNecessary();
-			SingleFileExceptionReport singleFileExceptionReport = getExceptionsSinceLastUpdateAndReset();
-			singleFileExceptionReport.separateSightedUnsightedAndReturnUnkownExceptions(Collections.EMPTY_LIST);
-			return singleFileExceptionReport;
-		}
-		
-		public void setTime(long time) {
-			this.time = time;
-		}
-		
-		@Override
-		protected long getCurrTime(){
-			return time;
-		}
-		
-
-	}
+//	private class SingleFileMonitorTestFixture extends SingleFileMonitor {
+//		
+//		private long time = System.currentTimeMillis();
+//		
+//		public SingleFileMonitorTestFixture(long checkIntervalInMs) {
+//			super(new MonitoredFile(checkIntervalInMs, createTempFile().getAbsolutePath()));
+//		}
+//
+//		public void writeToFile(String logFileContent) throws IOException {
+//	        BufferedWriter out;
+//			out = new BufferedWriter(new FileWriter(getMonitoredFile().getFilename(), true));
+//	        out.write(logFileContent);
+//	        out.close();
+//
+//		}
+//		
+//		@Override
+//		public String getNextLogFileChunk() {
+//			return super.getNextLogFileChunk();
+//		}
+//
+//		private SingleFileExceptionReport getExecutionReportAndSeparateExceptions() {
+//			parseNewFileEntriesIfNecessary();
+//			SingleFileExceptionReport singleFileExceptionReport = getExceptionsSinceLastUpdateAndReset();
+//			singleFileExceptionReport.separateSightedUnsightedAndReturnUnkownExceptions(Collections.EMPTY_LIST);
+//			return singleFileExceptionReport;
+//		}
+//		
+//		public void setTime(long time) {
+//			this.time = time;
+//		}
+//		
+//		@Override
+//		protected long getCurrTime(){
+//			return time;
+//		}
+//		
+//
+//	}
 }
