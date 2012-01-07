@@ -1,4 +1,4 @@
-package de.smeo.tools.exceptionmonitor.commandline;
+package de.smeo.tools.exceptionmonitor.common;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,7 +13,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import de.smeo.tools.exceptionmonitor.common.FileUtils;
 
 public class EmailDispatcher {
 	private Properties mailServerProperties;

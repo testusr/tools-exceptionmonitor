@@ -1,11 +1,10 @@
-package de.smeo.tools.exceptionmonitor.commandline;
+package de.smeo.tools.exceptionmonitor.common;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.smeo.tools.exceptionmonitor.common.FileUtils;
 import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor.FileMonitorState;
 
 /**

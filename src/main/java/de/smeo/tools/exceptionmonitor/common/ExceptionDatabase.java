@@ -1,4 +1,4 @@
-package de.smeo.tools.exceptionmonitor.commandline;
+package de.smeo.tools.exceptionmonitor.common;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,8 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.smeo.tools.exceptionmonitor.commandline.ExceptionDatabase.CategorizedExceptions;
-import de.smeo.tools.exceptionmonitor.common.FileUtils;
+import de.smeo.tools.exceptionmonitor.common.ExceptionDatabase.CategorizedExceptions;
 import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
 
