@@ -1,5 +1,6 @@
 package de.smeo.tools.exceptionmonitor.exceptionparser;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * @author smeo
  *
  */
-public class ExceptionStackTrace {
+public class ExceptionStackTrace implements Serializable {
 	private List<String> lines = new ArrayList<String>();
 
 	public void addLine(String stackTraceMemberLine) {

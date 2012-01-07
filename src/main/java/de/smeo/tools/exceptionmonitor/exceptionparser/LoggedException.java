@@ -1,14 +1,14 @@
 package de.smeo.tools.exceptionmonitor.exceptionparser;
 
+import java.io.Serializable;
 import java.util.List;
 
 
-public class LoggedException {
+public class LoggedException implements Serializable {
 	private ExceptionStackTrace stackTrace = new ExceptionStackTrace();
 	private String exceptionClassName;
 	private String comment;
 
-	
 	public LoggedException(String exceptionClassName) {
 		this.exceptionClassName = exceptionClassName;
 	}

@@ -1,5 +1,6 @@
 package de.smeo.tools.exceptionmonitor.exceptionparser;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,9 @@ import java.util.List;
  * @author smeo
  *
  */
-public class ExceptionCausedByChain {
+public class ExceptionCausedByChain implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	public final static String REGEXP_CAUSED_BY = "Caused by:";
 
 	private List<LoggedException> causedByChain = new ArrayList<LoggedException>();
