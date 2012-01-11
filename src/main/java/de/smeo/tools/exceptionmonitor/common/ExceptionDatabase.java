@@ -26,6 +26,9 @@ public class ExceptionDatabase {
 
 	private void loadStorageFromFile() {
 		absFilenameToknownExceptionSamples = (Map<String, List<ExceptionCausedByChain>> ) FileUtils.readObjectFromFile(storageFile);
+		if (absFilenameToknownExceptionSamples == null){
+			absFilenameToknownExceptionSamples =  new HashMap<String, List<ExceptionCausedByChain>>();
+		}
 	}
 	
 	public void saveStorageToFile() {

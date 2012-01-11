@@ -98,7 +98,7 @@ public class PeriodicEmailExceptionReport {
 						categorizedExceptions.getYetUnknownExceptions(), true);
 				newExceptionReport.addExceptionContainers(
 						categorizedExceptions.getKnownExceptions(), false);
-				String subject = "ExceptionReport: " + currLogFile.getName();
+				String subject = "ExceptionReport: " + currLogFile.getAbsolutePath();
 				if (categorizedExceptions.hasYetUnkownExceptions()) {
 					subject = "YET UNKOWN EXCEPTIONS in " + subject;
 				}
@@ -118,7 +118,7 @@ public class PeriodicEmailExceptionReport {
 						+ "configuration. (see config directory section)\n"
 						+ "\n"
 						+ "Syntax:\n"
-						+ "PeriodicEmailExceptionReport <files> <config directory>\n"
+						+ "PeriodicEmailExceptionReport <files> <config directory> <target email>\n"
 						+ "\n"
 						+ "files - files is a comma separated list of files to, wildcard * is supported\n"
 						+ "config directory - the directory where the tool will store its databases and config files\n"
