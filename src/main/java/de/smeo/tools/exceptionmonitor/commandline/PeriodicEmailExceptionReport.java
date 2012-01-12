@@ -111,8 +111,7 @@ public class PeriodicEmailExceptionReport {
 	}
 
 	public static void printHelpText() {
-		System.out
-				.println("ShortDescription:\n"
+		System.out.println("ShortDescription:\n"
 						+ "The tool is mean to be called periodically, manually or by a cron script. The tool will\n"
 						+ "parse the specified logfiles, create rejection reports end send out emails depending on its \n"
 						+ "configuration. (see config directory section)\n"

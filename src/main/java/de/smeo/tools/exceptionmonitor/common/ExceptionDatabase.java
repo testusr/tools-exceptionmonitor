@@ -10,13 +10,14 @@ import java.util.Map;
 import de.smeo.tools.exceptionmonitor.common.ExceptionDatabase.CategorizedExceptions;
 import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
 
 /**
  * Storage for know exceptions and source for statistics etc
  * @author smeo
  */
 public class ExceptionDatabase {
-	private Map<String, List<ExceptionCausedByChain>> absFilenameToknownExceptionSamples = new HashMap<String, List<ExceptionCausedByChain>>();
+	private List<FileExceptionContainer> exceptionDataBase = new ArrayList<ExceptionDatabase.FileExceptionContainer>();
 	private File storageFile;
 	
 	public ExceptionDatabase(String storageFile) {
@@ -25,14 +26,14 @@ public class ExceptionDatabase {
 	}
 
 	private void loadStorageFromFile() {
-		absFilenameToknownExceptionSamples = (Map<String, List<ExceptionCausedByChain>> ) FileUtils.readObjectFromFile(storageFile);
-		if (absFilenameToknownExceptionSamples == null){
-			absFilenameToknownExceptionSamples =  new HashMap<String, List<ExceptionCausedByChain>>();
+		exceptionDataBase = (List<FileExceptionContainer>) XmlUtils.loadObjectFromXmlFile(storageFile);
+		if (exceptionDataBase == null){
+			exceptionDataBase = new ArrayList<ExceptionDatabase.FileExceptionContainer>();
 		}
 	}
 	
 	public void saveStorageToFile() {
-		FileUtils.writeObjectToFile(absFilenameToknownExceptionSamples, storageFile);
+		XmlUtils.writeObjectToXmlFile(exceptionDataBase, storageFile);
 	}
 	
 	private void openOrCreateFile(String storageFileName) {
@@ -54,17 +55,25 @@ public class ExceptionDatabase {
 		for (ExceptionCausedByChain currExceptionCausedByChain : newExceptions){
 			boolean isKnownException = false;
 	
-			List<ExceptionCausedByChain> exceptionCausedByChainsForFile = absFilenameToknownExceptionSamples.get(file.getAbsolutePath());
-			if (exceptionCausedByChainsForFile == null){
-				exceptionCausedByChainsForFile = new ArrayList<ExceptionCausedByChain>();
-				absFilenameToknownExceptionSamples.put(file.getAbsolutePath(), exceptionCausedByChainsForFile);
-			}
+			FileExceptionContainer fileExceptionContainer = getOrCreateFileExceptionContainer(file);
+			List<ExceptionCausedByChain> exceptionCausedByChainsForFile = fileExceptionContainer.getExceptionCauseByChains();
 			
 			isKnownException = listContainsExceptionWithSameRootCause(currExceptionCausedByChain, exceptionCausedByChainsForFile);
 			if (!isKnownException){
-				exceptionCausedByChainsForFile.add(currExceptionCausedByChain);
+				fileExceptionContainer.addException(currExceptionCausedByChain.toString());
 			}
 		}
+	}
+	
+	FileExceptionContainer getOrCreateFileExceptionContainer(File file){
+		for (FileExceptionContainer currExceptionContainer : exceptionDataBase){
+			if (currExceptionContainer.getAbsoluteFilePath().equals(file.getAbsolutePath())){
+				return currExceptionContainer;
+			}
+		}
+		FileExceptionContainer newFileExceptionContainer = new FileExceptionContainer(file.getAbsolutePath());
+		exceptionDataBase.add(newFileExceptionContainer);
+		return newFileExceptionContainer;
 	}
 
 	public CategorizedExceptions categorizeExceptions(
@@ -76,12 +85,7 @@ public class ExceptionDatabase {
 		for (ExceptionCausedByChain currExceptionCausedByChain : newExceptions){
 			boolean isKnownException = false;
 	
-			List<ExceptionCausedByChain> exceptionCausedByChainsForFile = absFilenameToknownExceptionSamples.get(file.getAbsolutePath());
-			if (exceptionCausedByChainsForFile == null){
-				exceptionCausedByChainsForFile = new ArrayList<ExceptionCausedByChain>();
-				absFilenameToknownExceptionSamples.put(file.getAbsolutePath(), exceptionCausedByChainsForFile);
-			}
-			
+			List<ExceptionCausedByChain> exceptionCausedByChainsForFile = getOrCreateFileExceptionContainer(file).getExceptionCauseByChains();
 			isKnownException = listContainsExceptionWithSameRootCause(currExceptionCausedByChain, exceptionCausedByChainsForFile);
 			if (isKnownException){
 				categorizedExceptions.addKnownException(currExceptionCausedByChain);
@@ -138,4 +142,75 @@ public class ExceptionDatabase {
 		}
 	}
 
+	private static class FileExceptionContainer {
+		private String absFilePath;
+		private List<ExceptionDatabaseEntry> exceptions = new ArrayList<ExceptionDatabase.ExceptionDatabaseEntry>();
+		
+		public FileExceptionContainer(String absolutePath) {
+			this.absFilePath = absolutePath;
+		}
+
+		public void addException(String exceptionString) {
+			exceptions.add(new ExceptionDatabaseEntry(exceptionString));
+		}
+
+		public List<ExceptionCausedByChain> getExceptionCauseByChains() {
+			List<ExceptionCausedByChain> exceptionCausedByChains = new ArrayList<ExceptionCausedByChain>();
+			for (ExceptionDatabaseEntry currDatabaseEntry : exceptions){
+				exceptionCausedByChains.add(currDatabaseEntry.getExceptionCausedByChain());
+			}
+			return exceptionCausedByChains;
+		}
+
+		public File getFile(){
+			return new File(absFilePath);
+		}
+
+		public Object getAbsoluteFilePath() {
+			return absFilePath;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((absFilePath == null) ? 0 : absFilePath.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			FileExceptionContainer other = (FileExceptionContainer) obj;
+			if (absFilePath == null) {
+				if (other.absFilePath != null)
+					return false;
+			} else if (!absFilePath.equals(other.absFilePath))
+				return false;
+			return true;
+		}
+	}
+	private static class ExceptionDatabaseEntry {
+		private transient ExceptionCausedByChain exceptionCausedByChain;
+		private String exceptionString;
+		 
+		public ExceptionDatabaseEntry(String exceptionString) {
+			this.exceptionString = exceptionString;
+		}
+
+		public ExceptionCausedByChain getExceptionCausedByChain() {
+			 if (exceptionCausedByChain == null){
+				 ExceptionParser exceptionParser = new ExceptionParser();
+				 exceptionParser.parseAndFlush(exceptionString);
+				 exceptionCausedByChain = exceptionParser.getExceptionChains().get(0);
+			 }
+			return exceptionCausedByChain;
+		}
+	}
 }

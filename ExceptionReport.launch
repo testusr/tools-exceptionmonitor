@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/tools-exceptionmonitor/src/main/de/smeo/tools/exceptionmonitor/commandline/ExceptionReport.java"/>
+<listEntry value="/tools-exceptionmonitor/src/main/java/de/smeo/tools/exceptionmonitor/commandline/ExceptionReport.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>

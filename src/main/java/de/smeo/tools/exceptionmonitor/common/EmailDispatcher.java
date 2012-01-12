@@ -15,7 +15,8 @@ import javax.mail.internet.MimeMessage;
 
 public class EmailDispatcher {
 	private Properties mailServerProperties;
-
+	private boolean simulateEmails = false;
+	
 	public EmailDispatcher(String configfile) {
 		File file = new File(configfile);
 		if (file.exists()) {
@@ -27,6 +28,7 @@ public class EmailDispatcher {
 		} else {
 			createSamplePropertyFile(file);
 		}
+		simulateEmails = System.getProperties().containsKey("simulateEmails");
 	}
 
 	public void sendEmail(String receiverList, String subject,
@@ -40,19 +42,21 @@ public class EmailDispatcher {
 			System.out.println("messageBody: \n" + messageBody + "\n");
 			System.out.println("---------------------------------------------------------\n");
 
-			Session mailSession = Session.getDefaultInstance(
-					mailServerProperties, null);
-			Transport transport = mailSession.getTransport();
-
-			MimeMessage message = new MimeMessage(mailSession);
-			message.setSubject(subject);
-			message.setContent(messageBody, "text/plain");
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(
-					receiver));
-
-			transport.connect();
-			transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
-			transport.close();
+			if (!simulateEmails){
+				Session mailSession = Session.getDefaultInstance(
+						mailServerProperties, null);
+				Transport transport = mailSession.getTransport();
+	
+				MimeMessage message = new MimeMessage(mailSession);
+				message.setSubject(subject);
+				message.setContent(messageBody, "text/plain");
+				message.addRecipient(Message.RecipientType.TO, new InternetAddress(
+						receiver));
+	
+				transport.connect();
+				transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
+				transport.close();
+			}
 		}
 	}
 
