@@ -31,6 +31,7 @@ public class ExceptionParser {
 	private ExceptionCausedByChain currExceptionCausedByChain = null; 
 	private String previousLine = null;
 	
+	private long currLineIndex = 0;
 	
 	public List<EqualCauseExceptionChainContainer> getExceptionGroupedByRootCause(){
 		return EqualCauseExceptionContainerFactory.createEqualCauseContainers(getExceptionChains());
@@ -58,11 +59,13 @@ public class ExceptionParser {
 	} 
 	
 	protected void parseLine(String currLine) {
+		currLineIndex++;
 		String currLineTrimmed = currLine.trim();
 		if (previousLine != null){
 			if (firstLineMarksStartOfExceptionTrace(previousLine, currLineTrimmed)){
 				currException = createNewException(previousLine);
 				currExceptionCausedByChain = new ExceptionCausedByChain(currException);
+				currExceptionCausedByChain.setLineNumber(currLineIndex);
 			}
 			
 			if (isCurrentlyFillingException()){
@@ -165,7 +168,15 @@ public class ExceptionParser {
 		Pattern pattern = Pattern.compile(regexp);
 		return pattern.matcher(line).matches();
 	}
+	
+	public void setCurrLineIndex(long currLineIndex) {
+		this.currLineIndex = currLineIndex;
+	}
 
+	public long getCurrLineIndex() {
+		return currLineIndex;
+	}
+	
 	public void clean() {
 		this.collectedExceptions.clear();
 		this.exceptionChains.clear();

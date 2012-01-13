@@ -10,6 +10,7 @@ import java.util.Map;
 import de.smeo.tools.exceptionmonitor.common.ExceptionDatabase.CategorizedExceptions;
 import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain.ExceptionOcurrance;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
 
 /**
@@ -53,15 +54,8 @@ public class ExceptionDatabase {
 			List<ExceptionCausedByChain> newExceptions) {
 		
 		for (ExceptionCausedByChain currExceptionCausedByChain : newExceptions){
-			boolean isKnownException = false;
-	
 			FileExceptionContainer fileExceptionContainer = getOrCreateFileExceptionContainer(file);
-			List<ExceptionCausedByChain> exceptionCausedByChainsForFile = fileExceptionContainer.getExceptionCauseByChains();
-			
-			isKnownException = listContainsExceptionWithSameRootCause(currExceptionCausedByChain, exceptionCausedByChainsForFile);
-			if (!isKnownException){
-				fileExceptionContainer.addException(currExceptionCausedByChain.toString());
-			}
+			fileExceptionContainer.addException(currExceptionCausedByChain);
 		}
 	}
 	
@@ -150,8 +144,23 @@ public class ExceptionDatabase {
 			this.absFilePath = absolutePath;
 		}
 
-		public void addException(String exceptionString) {
-			exceptions.add(new ExceptionDatabaseEntry(exceptionString));
+		public void addException(ExceptionCausedByChain currExceptionCausedByChain) {
+			ExceptionDatabaseEntry fittingEntry =  findFittingDatabaseEntry(currExceptionCausedByChain);
+			if (fittingEntry == null){
+				fittingEntry = new ExceptionDatabaseEntry(currExceptionCausedByChain.toString());
+				exceptions.add(fittingEntry);
+			}
+			fittingEntry.addOccuranceIfNotAlreadyAdded(currExceptionCausedByChain.getOccurance());
+		}
+
+		private ExceptionDatabaseEntry findFittingDatabaseEntry(
+				ExceptionCausedByChain currExceptionCausedByChain) {
+			for (ExceptionDatabaseEntry currDatabaseEntry : exceptions){
+				if (currDatabaseEntry.getExceptionCausedByChain().hasEqualRootCause(currExceptionCausedByChain)){
+					return currDatabaseEntry;
+				}
+			}
+			return null;
 		}
 
 		public List<ExceptionCausedByChain> getExceptionCauseByChains() {
@@ -199,9 +208,16 @@ public class ExceptionDatabase {
 	private static class ExceptionDatabaseEntry {
 		private transient ExceptionCausedByChain exceptionCausedByChain;
 		private String exceptionString;
+		private List<ExceptionOcurrance> exceptionOccurances = new ArrayList<ExceptionOcurrance>();
 		 
 		public ExceptionDatabaseEntry(String exceptionString) {
 			this.exceptionString = exceptionString;
+		}
+		
+		public void addOccuranceIfNotAlreadyAdded(ExceptionOcurrance occurance){
+			if (!exceptionOccurances.contains(occurance)){
+				exceptionOccurances.add(occurance);
+			}
 		}
 
 		public ExceptionCausedByChain getExceptionCausedByChain() {

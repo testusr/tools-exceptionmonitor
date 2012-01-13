@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.smeo.tools.exceptionmonitor.common.DateUtils;
+
 
 /**
  * Exception chain is representing exceptions leading to exceptions, marked by the 
@@ -14,11 +16,15 @@ import java.util.List;
  */
 public class ExceptionCausedByChain implements Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
 	public final static String REGEXP_CAUSED_BY = "Caused by:";
 
 	private List<LoggedException> causedByChain = new ArrayList<LoggedException>();
-	
+
+	private ExceptionOcurrance occurance = new ExceptionOcurrance(
+			DateUtils.getDaysTimeStamp(),
+			-1);
+
 	public ExceptionCausedByChain(LoggedException exception) {
 		super();
 		causedByChain.add(exception);
@@ -49,6 +55,35 @@ public class ExceptionCausedByChain implements Serializable {
 		return false;
 	}
 
+	public int size(){
+		return causedByChain.size();
+	}
+
+	public String getFirstExceptionName() {
+		return getExceptions().get(0).getExceptionClassName();
+	}
+
+
+	public ExceptionOcurrance getOccurance() {
+		return occurance;
+	}
+	
+	public long getTimelyOccurance() {
+		return occurance.timelyOccurance;
+	}
+
+	public void setTimelyOccurance(long timelyOccurance) {
+		this.occurance.timelyOccurance = timelyOccurance;
+	}
+
+	public void setLineNumber(long lineNumber) {
+		this.occurance.lineNumber = lineNumber;
+	}
+	
+	public long getLineNumber() {
+		return occurance.lineNumber;
+	}
+
 	@Override
 	public String toString() {
 		StringBuffer stringBuffer = new StringBuffer();
@@ -62,13 +97,44 @@ public class ExceptionCausedByChain implements Serializable {
 		return stringBuffer.toString();
 	}
 
-	public int size(){
-		return causedByChain.size();
-	}
+	
+	public static class ExceptionOcurrance implements Serializable {
+		private static final long serialVersionUID = -7161220471772061732L;
+		public long timelyOccurance;
+		public long lineNumber;
 
-	public String getFirstExceptionName() {
-		return getExceptions().get(0).getExceptionClassName();
-	}
+		public ExceptionOcurrance(long timelyOccurance, long lineNumber) {
+			this.timelyOccurance = timelyOccurance;
+			this.lineNumber = lineNumber;
+		}
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (int) (lineNumber ^ (lineNumber >>> 32));
+			result = prime * result
+					+ (int) (timelyOccurance ^ (timelyOccurance >>> 32));
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ExceptionOcurrance other = (ExceptionOcurrance) obj;
+			if (lineNumber != other.lineNumber)
+				return false;
+			if (timelyOccurance != other.timelyOccurance)
+				return false;
+			return true;
+		}
+		
+		
+	}
 
 }

@@ -33,11 +33,13 @@ public class SingleFileMonitor {
 	
 
 	public FileMonitorState getFileMonitorState() {
+		this.fileMonitorState.lastReadLineIndex = exceptionParser.getCurrLineIndex();
 		return this.fileMonitorState;
 	}
 
 	public synchronized void setFileMonitorState(FileMonitorState fileMonitorState){	
 		this.fileMonitorState = fileMonitorState;
+		exceptionParser.setCurrLineIndex(fileMonitorState.lastReadLineIndex);
 	}
 	
 	public synchronized List<ExceptionCausedByChain> parseNewFileEntriesAndReturnExceptions() 
@@ -141,6 +143,7 @@ public class SingleFileMonitor {
 			if (monitoredFile.length() < fileMonitorState.lastFileSize){
 				System.out.println("Monitored log file got smaller, start from beginning '"+monitoredFile.getAbsolutePath()+"'");
 				fileMonitorState.lastReadFilePosition = 0;
+				fileMonitorState.lastReadLineIndex = 0;
 			}
 		}
 
@@ -149,7 +152,8 @@ public class SingleFileMonitor {
 	public static class FileMonitorState implements Serializable {
 		private static final long serialVersionUID = 825051722073708101L;
 		public long lastReadFilePosition = 0;
-		public long lastFileSize;
+		public long lastFileSize = 0;
+		public long lastReadLineIndex = 0;
 	}
 	
 }
