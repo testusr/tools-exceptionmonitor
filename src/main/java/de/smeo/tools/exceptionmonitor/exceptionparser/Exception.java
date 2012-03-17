@@ -4,28 +4,27 @@ import java.io.Serializable;
 import java.util.List;
 
 
-public class LoggedException implements Serializable {
+public class Exception implements Serializable {
 	private ExceptionStackTrace stackTrace = new ExceptionStackTrace();
 	private String exceptionClassName;
-	private String comment;
+	private String exceptionComment;
 
-	public LoggedException(String exceptionClassName) {
+	public Exception(String exceptionClassName) {
 		this.exceptionClassName = exceptionClassName;
 	}
 
 	public String getExceptionClassName() {
 		return exceptionClassName;
 	}
-
+	public void setExceptionComment(String comment) {
+		this.exceptionComment = comment;
+	}
+	
 	public ExceptionStackTrace getStackTrace() {
 		return stackTrace;
 	}
 
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-	
-	public boolean hasEqualRootCause(LoggedException loggedException) {
+	public boolean hasEqualRootCause(Exception loggedException) {
 		if (loggedException.getExceptionClassName().equals(exceptionClassName)){
 			return stackTrace.hasEqualCharacteristics(loggedException.stackTrace);
 		}
@@ -40,9 +39,9 @@ public class LoggedException implements Serializable {
 	public String toString() {
 		StringBuffer stringBuffer = new StringBuffer();
 		stringBuffer.append(exceptionClassName);
-		if (comment != null){
+		if (exceptionComment != null){
 		   stringBuffer.append(":");
-		   stringBuffer.append(comment);
+		   stringBuffer.append(exceptionComment);
 		}
   	    
 		stringBuffer.append("\n");

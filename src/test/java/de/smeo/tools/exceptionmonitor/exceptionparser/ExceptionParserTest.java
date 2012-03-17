@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChainCreator;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
 import de.smeo.tools.exceptionmonitor.exceptionparser.LogFileExceptionParser;
-import de.smeo.tools.exceptionmonitor.exceptionparser.LoggedException;
+import de.smeo.tools.exceptionmonitor.exceptionparser.Exception;
 
 public class ExceptionParserTest {
 	private static final String EXCEPTION_SAMPLE1 = "" +
@@ -46,14 +46,12 @@ public class ExceptionParserTest {
 		ExceptionParser exceptionParser = new ExceptionParser();
 		exceptionParser.parseAndFlush(EXCEPTION_SAMPLE1);
 
-		List<ExceptionCausedByChain> exceptionChains = exceptionParser.getExceptionChains();
-		assertEquals(1, exceptionChains.size());
+		List<ExceptionOccuranceRecord> exceptionRecords = exceptionParser.getExceptionOccuranceRecords();
+		assertEquals(1, exceptionRecords.size());
 		
-		ExceptionCausedByChain exceptionCausedByChain = exceptionChains.get(0);
-		assertEquals(3, exceptionCausedByChain.getExceptions().size());
+		List<Exception> exceptions = exceptionRecords.get(0).getExceptionChain().getExceptions();
+		assertEquals(3, exceptions.size());
 		
-		List<LoggedException> exceptions = exceptionCausedByChain.getExceptions();
-
 		assertEquals(exceptions.get(0).getExceptionClassName(),"com.three60t.tex.app.exceptions.processing.ProcessingException");
 		assertEquals(exceptions.get(1).getExceptionClassName(), "java.lang.reflect.InvocationTargetException");
 		assertEquals(exceptions.get(2).getExceptionClassName(), "java.lang.IllegalArgumentException");
@@ -64,7 +62,7 @@ public class ExceptionParserTest {
 		ExceptionParser exceptionParser = new ExceptionParser();
 		exceptionParser.parseAndFlush(EXCEPTION_SAMPLE1);
 		
-		List<LoggedException> loggedExceptions = exceptionParser.getExceptions();
+		List<Exception> loggedExceptions = exceptionParser.getExceptions();
 		assertEquals(3, loggedExceptions.size());
 		assertEquals("com.three60t.tex.app.exceptions.processing.ProcessingException", loggedExceptions.get(0).getExceptionClassName());
 		assertEquals("java.lang.reflect.InvocationTargetException", loggedExceptions.get(1).getExceptionClassName());
@@ -159,12 +157,12 @@ public class ExceptionParserTest {
 		LogFileExceptionParser logFileExceptionParser = new LogFileExceptionParser();
 		logFileExceptionParser.parseFile("resources/exceptionsamples.txt");
 		
-		List<ExceptionCausedByChain> exceptionChains = logFileExceptionParser.getExceptionChains();
-		assertEquals(6, exceptionChains.size());
+		List<ExceptionOccuranceRecord> exceptionRecords = logFileExceptionParser.getExceptionOccuranceRecords();
+		assertEquals(6, exceptionRecords.size());
 		
 		for (int i = 0; i < expectedExcepionClassNames.length; i++){
-			ExceptionCausedByChain currExceptionChain = exceptionChains.get(i);
-			assertEquals(expectedExcepionClassNames[i], currExceptionChain.getExceptions().get(0).getExceptionClassName());
+			ExceptionOccuranceRecord currExceptionRecord = exceptionRecords.get(i);
+			assertEquals(expectedExcepionClassNames[i], currExceptionRecord.getExceptionChain().getExceptions().get(0).getExceptionClassName());
 		}
 	}
 }

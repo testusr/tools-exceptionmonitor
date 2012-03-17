@@ -12,7 +12,8 @@ import de.smeo.tools.exceptionmonitor.common.EmailDispatcher;
 import de.smeo.tools.exceptionmonitor.common.ExceptionDatabase;
 import de.smeo.tools.exceptionmonitor.common.ExceptionDatabase.CategorizedExceptions;
 import de.smeo.tools.exceptionmonitor.common.FileMonitorStateRepository;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChainCreator;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
 import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor;
 
 public class PeriodicEmailExceptionReport {
@@ -58,8 +59,8 @@ public class PeriodicEmailExceptionReport {
 						logFile);
 				singleFileMonitor.setFileMonitorState(fileMonitorStates
 						.loadFileMonitorState(logFile));
-				List<ExceptionCausedByChain> foundExceptions = singleFileMonitor
-						.parseNewFileEntriesAndReturnExceptions();
+				List<ExceptionOccuranceRecord> foundExceptions = singleFileMonitor
+						.parseNewFileEntriesAndReturnExceptionRecords();
 
 				if (foundExceptions.size() > 0) {
 					CategorizedExceptions categorizedFoundExeptions = exceptionDatabase

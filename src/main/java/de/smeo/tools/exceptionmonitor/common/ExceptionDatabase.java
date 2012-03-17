@@ -4,14 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import de.smeo.tools.exceptionmonitor.common.ExceptionDatabase.CategorizedExceptions;
-import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain.ExceptionOcurrance;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
 
 /**
  * Storage for know exceptions and source for statistics etc
@@ -23,7 +22,7 @@ public class ExceptionDatabase {
 	
 	public ExceptionDatabase(String storageFile) {
 		openOrCreateFile(storageFile);
-		loadStorageFromFile();
+		loadStorageFromFile(); 
 	}
 
 	private void loadStorageFromFile() {
@@ -51,11 +50,11 @@ public class ExceptionDatabase {
 
 	public void updateDatabase(
 			File file,
-			List<ExceptionCausedByChain> newExceptions) {
+			List<ExceptionOccuranceRecord> newExceptions) {
 		
-		for (ExceptionCausedByChain currExceptionCausedByChain : newExceptions){
+		for (ExceptionOccuranceRecord currExceptionRecord : newExceptions){
 			FileExceptionContainer fileExceptionContainer = getOrCreateFileExceptionContainer(file);
-			fileExceptionContainer.addException(currExceptionCausedByChain);
+			fileExceptionContainer.addExceptionRecord(currExceptionRecord);
 		}
 	}
 	
@@ -72,103 +71,76 @@ public class ExceptionDatabase {
 
 	public CategorizedExceptions categorizeExceptions(
 			File file,
-			List<ExceptionCausedByChain> newExceptions) {
+			List<ExceptionOccuranceRecord> newExceptionRecords) {
 		
 		CategorizedExceptions categorizedExceptions = new CategorizedExceptions();
 		
-		for (ExceptionCausedByChain currExceptionCausedByChain : newExceptions){
+		for (ExceptionOccuranceRecord currExceptionRecord : newExceptionRecords){
 			boolean isKnownException = false;
 	
-			List<ExceptionCausedByChain> exceptionCausedByChainsForFile = getOrCreateFileExceptionContainer(file).getExceptionCauseByChains();
-			isKnownException = listContainsExceptionWithSameRootCause(currExceptionCausedByChain, exceptionCausedByChainsForFile);
+			Set<ExceptionChain> exceptionCausedByChainsForFile = getOrCreateFileExceptionContainer(file).getExceptionChains();
+			isKnownException = exceptionCausedByChainsForFile.contains(currExceptionRecord.getExceptionChain());
 			if (isKnownException){
-				categorizedExceptions.addKnownException(currExceptionCausedByChain);
+				categorizedExceptions.addKnownException(currExceptionRecord);
 			} else {
-				categorizedExceptions.addYetUnkownException(currExceptionCausedByChain);
+				categorizedExceptions.addYetUnkownException(currExceptionRecord);
 			}
 		}
 		
 		return categorizedExceptions;
 	}
 
-	private boolean listContainsExceptionWithSameRootCause(ExceptionCausedByChain exception, List<ExceptionCausedByChain> exceptionList){
-		for (ExceptionCausedByChain currExceptionCausedByChain : exceptionList){
-			if (currExceptionCausedByChain.hasEqualRootCause(exception)){
-				return true;
-			}
-		}
-		return false;
-	}
-		
 	public static class CategorizedExceptions {
-		private List<EqualCauseExceptionChainContainer> knownExceptions = new ArrayList<EqualCauseExceptionChainContainer>();
-		private List<EqualCauseExceptionChainContainer> yetUnknownExceptions = new ArrayList<EqualCauseExceptionChainContainer>();
+		private Map<ExceptionChain, List<ExceptionOccuranceRecord>> knownExceptions = new HashMap<ExceptionChain, List<ExceptionOccuranceRecord>>();
+		private Map<ExceptionChain, List<ExceptionOccuranceRecord>> yetUnknownExceptions = new HashMap<ExceptionChain, List<ExceptionOccuranceRecord>>();
 		
 		public boolean hasYetUnkownExceptions(){
 			return (yetUnknownExceptions.size() > 0);
-		}
-		public List<EqualCauseExceptionChainContainer> getKnownExceptions() {
+		} 
+		public Map<ExceptionChain, List<ExceptionOccuranceRecord>> getKnownExceptions() {
 			return knownExceptions;
 		}
 
-		public List<EqualCauseExceptionChainContainer> getYetUnknownExceptions() {
+		public Map<ExceptionChain, List<ExceptionOccuranceRecord>> getYetUnknownExceptions() {
 			return yetUnknownExceptions;
 		}
 
-		public void addKnownException(ExceptionCausedByChain knownException){
-			addExceptionToExceptionChainContainerList(knownException, knownExceptions);
+		public void addKnownException(ExceptionOccuranceRecord exceptionRecord){
+			 List<ExceptionOccuranceRecord> occurancesForExceptionChain = knownExceptions.get(exceptionRecord.getExceptionChain());
+			 if (occurancesForExceptionChain == null){
+				 occurancesForExceptionChain = new ArrayList<ExceptionOccuranceRecord>();
+				 knownExceptions.put(exceptionRecord.getExceptionChain(), occurancesForExceptionChain);
+			 }
+			 occurancesForExceptionChain.add(exceptionRecord);
 		}
 		
-		public void addYetUnkownException(ExceptionCausedByChain unkownException){
-			addExceptionToExceptionChainContainerList(unkownException, yetUnknownExceptions);
+		public void addYetUnkownException(ExceptionOccuranceRecord exceptionRecord){
+			 List<ExceptionOccuranceRecord> occurancesForExceptionChain = yetUnknownExceptions.get(exceptionRecord.getExceptionChain());
+			 if (occurancesForExceptionChain == null){
+				 occurancesForExceptionChain = new ArrayList<ExceptionOccuranceRecord>();
+				 knownExceptions.put(exceptionRecord.getExceptionChain(), occurancesForExceptionChain);
+			 }
+			 occurancesForExceptionChain.add(exceptionRecord);
 		}
 		
-		private void addExceptionToExceptionChainContainerList(ExceptionCausedByChain exceptionCausedByChain, List<EqualCauseExceptionChainContainer> exceptionContainers){
-			boolean exceptionAdded = false;
-			for (int i=0; !exceptionAdded && (i < exceptionContainers.size()); i++){
-				EqualCauseExceptionChainContainer equalCauseExceptionChainContainer = exceptionContainers.get(i);
-				exceptionAdded = equalCauseExceptionChainContainer.addExceptionIfHasEqualRootCause(exceptionCausedByChain);
-			}
-			
-			if (!exceptionAdded){
-				exceptionContainers.add(new EqualCauseExceptionChainContainer(exceptionCausedByChain));
-			}
-		}
 	}
 
 	private static class FileExceptionContainer {
 		private String absFilePath;
-		private List<ExceptionDatabaseEntry> exceptions = new ArrayList<ExceptionDatabase.ExceptionDatabaseEntry>();
+		private Set<ExceptionChain> exceptionChains = new HashSet<ExceptionChain>();
+		private List<ExceptionOccuranceRecord> exceptions = new ArrayList<ExceptionOccuranceRecord>();
 		
 		public FileExceptionContainer(String absolutePath) {
 			this.absFilePath = absolutePath;
 		}
 
-		public void addException(ExceptionCausedByChain currExceptionCausedByChain) {
-			ExceptionDatabaseEntry fittingEntry =  findFittingDatabaseEntry(currExceptionCausedByChain);
-			if (fittingEntry == null){
-				fittingEntry = new ExceptionDatabaseEntry(currExceptionCausedByChain.toString());
-				exceptions.add(fittingEntry);
-			}
-			fittingEntry.addOccuranceIfNotAlreadyAdded(currExceptionCausedByChain.getOccurance());
+		public void addExceptionRecord(ExceptionOccuranceRecord exceptionRecord) {
+			exceptions.add(exceptionRecord);
+			exceptionChains.add(exceptionRecord.getExceptionChain());
 		}
 
-		private ExceptionDatabaseEntry findFittingDatabaseEntry(
-				ExceptionCausedByChain currExceptionCausedByChain) {
-			for (ExceptionDatabaseEntry currDatabaseEntry : exceptions){
-				if (currDatabaseEntry.getExceptionCausedByChain().hasEqualRootCause(currExceptionCausedByChain)){
-					return currDatabaseEntry;
-				}
-			}
-			return null;
-		}
-
-		public List<ExceptionCausedByChain> getExceptionCauseByChains() {
-			List<ExceptionCausedByChain> exceptionCausedByChains = new ArrayList<ExceptionCausedByChain>();
-			for (ExceptionDatabaseEntry currDatabaseEntry : exceptions){
-				exceptionCausedByChains.add(currDatabaseEntry.getExceptionCausedByChain());
-			}
-			return exceptionCausedByChains;
+		public Set<ExceptionChain> getExceptionChains() {
+			return exceptionChains;
 		}
 
 		public File getFile(){
@@ -203,30 +175,6 @@ public class ExceptionDatabase {
 			} else if (!absFilePath.equals(other.absFilePath))
 				return false;
 			return true;
-		}
-	}
-	private static class ExceptionDatabaseEntry {
-		private transient ExceptionCausedByChain exceptionCausedByChain;
-		private String exceptionString;
-		private List<ExceptionOcurrance> exceptionOccurances = new ArrayList<ExceptionOcurrance>();
-		 
-		public ExceptionDatabaseEntry(String exceptionString) {
-			this.exceptionString = exceptionString;
-		}
-		
-		public void addOccuranceIfNotAlreadyAdded(ExceptionOcurrance occurance){
-			if (!exceptionOccurances.contains(occurance)){
-				exceptionOccurances.add(occurance);
-			}
-		}
-
-		public ExceptionCausedByChain getExceptionCausedByChain() {
-			 if (exceptionCausedByChain == null){
-				 ExceptionParser exceptionParser = new ExceptionParser();
-				 exceptionParser.parseAndFlush(exceptionString);
-				 exceptionCausedByChain = exceptionParser.getExceptionChains().get(0);
-			 }
-			return exceptionCausedByChain;
 		}
 	}
 }

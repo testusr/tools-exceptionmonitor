@@ -5,7 +5,8 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.List;
 
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
 
 /**
@@ -42,7 +43,7 @@ public class SingleFileMonitor {
 		exceptionParser.setCurrLineIndex(fileMonitorState.lastReadLineIndex);
 	}
 	
-	public synchronized List<ExceptionCausedByChain> parseNewFileEntriesAndReturnExceptions() 
+	public synchronized List<ExceptionOccuranceRecord> parseNewFileEntriesAndReturnExceptionRecords() 
 	{
 		lastFileCheckTime = getCurrTime();
 		exceptionParser.clean();
@@ -50,7 +51,7 @@ public class SingleFileMonitor {
 		while ( (nextLogFileChunk = getNextLogFileChunk()) != null){
 			exceptionParser.parse(nextLogFileChunk);
 		}
-		return exceptionParser.getExceptionChains();
+		return exceptionParser.getExceptionOccuranceRecords();
 	}
 	
 	protected String getNextLogFileChunk() {

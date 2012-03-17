@@ -2,13 +2,14 @@ package de.smeo.tools.exceptionmonitor.commandline;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionChainContainer;
-import de.smeo.tools.exceptionmonitor.exceptionparser.EqualCauseExceptionContainerFactory;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
 import de.smeo.tools.exceptionmonitor.exceptionparser.LogFileExceptionParser;
 
 /**
@@ -25,10 +26,12 @@ public class ExceptionReport {
 	private class NamedExceptionChain implements Comparable<NamedExceptionChain>{
 		private Boolean exceptionOccuringTheFirstTime;
 		private String name;
-		private EqualCauseExceptionChainContainer equalCauseExceptionChainContainer;
+		private ExceptionChain exceptionChain;
+		private Integer occuranceCount;
 
-		public NamedExceptionChain(EqualCauseExceptionChainContainer exceptionChain) {
-			this.equalCauseExceptionChainContainer = exceptionChain;
+		public NamedExceptionChain(ExceptionChain exceptionChain, int occuranceCount) {
+			this.exceptionChain = exceptionChain;
+			this.occuranceCount = occuranceCount;
 		}
 
 		public void setName(String name) {
@@ -36,7 +39,7 @@ public class ExceptionReport {
 		}
 
 		public String getShortDescription() {
-			String shortDescription = "Exception[" + name + "/ count: "+equalCauseExceptionChainContainer.size()+"] - " + equalCauseExceptionChainContainer.getFirstExceptionName();
+			String shortDescription = "Exception[" + name + "/ count: "+occuranceCount+"] - " + exceptionChain.getFirstExceptionName();
 			if (exceptionOccuringTheFirstTime != null && exceptionOccuringTheFirstTime){
 				shortDescription = "FIRST OCCURANCE - " + shortDescription; 
 			}
@@ -44,8 +47,8 @@ public class ExceptionReport {
 		}
 		
 		public String getFullDescription() {
-			return "Exception[" + name + "/ count: "+equalCauseExceptionChainContainer.size()+"]\n" +
-					equalCauseExceptionChainContainer.getSampleExceptionChain().toString();
+			return "Exception[" + name + "/ count: "+ occuranceCount +"]\n" +
+					exceptionChain.toString();
 		}
 		
 		
@@ -56,9 +59,9 @@ public class ExceptionReport {
 				}
 				return 0;
 			}
-			int result = (new Integer(o.equalCauseExceptionChainContainer.size()).compareTo(equalCauseExceptionChainContainer.size()));
+			int result = (o.occuranceCount).compareTo(occuranceCount);
 			if (result == 0){
-				(o.equalCauseExceptionChainContainer.getFirstExceptionName()).compareTo(equalCauseExceptionChainContainer.getFirstExceptionName());
+				(o.exceptionChain.getFirstExceptionName()).compareTo(exceptionChain.getFirstExceptionName());
 			}
 			return result;
 		}
@@ -76,8 +79,8 @@ public class ExceptionReport {
 			logFileExceptionParser.parseFile(logfilename);
 			System.out.println("finished parsing logfile, took "+ (System.currentTimeMillis() - start) +" ms");
 		
-			List<ExceptionCausedByChain> exceptionChains = logFileExceptionParser.getExceptionChains();
-			addExceptionChains(exceptionChains);
+			List<ExceptionOccuranceRecord> exceptionRecords = logFileExceptionParser.getExceptionOccuranceRecords();
+			addExceptionChains(exceptionRecords);
 			
 			System.out.println(this.toString());
 
@@ -88,19 +91,34 @@ public class ExceptionReport {
 	}
 	
 	
-	private void addExceptionChains(List<ExceptionCausedByChain> exceptionChains) {
-		List<EqualCauseExceptionChainContainer> equalsCauseExceptionChainContainers = EqualCauseExceptionContainerFactory.createEqualCauseContainers(exceptionChains);
-		addExceptionContainers(equalsCauseExceptionChainContainers, null);
+	private void addExceptionChains(List<ExceptionOccuranceRecord> exceptionRecords) {
+		Map<ExceptionChain, List<ExceptionOccuranceRecord>> recordsToChain = groupRecordsByExceptionChain(exceptionRecords);
+		addExceptionContainers(recordsToChain, null);
 	}
 
 
-	public void addExceptionContainers(Collection<EqualCauseExceptionChainContainer> equalsCauseExceptionChainContainers, Boolean isExceptionsOccuringFirstTime) {
-		for (EqualCauseExceptionChainContainer currEqualCauseExceptionChainContainer : equalsCauseExceptionChainContainers){
-			NamedExceptionChain namedExceptionChain = new NamedExceptionChain(currEqualCauseExceptionChainContainer);
-			if (isExceptionsOccuringFirstTime != null){
-				namedExceptionChain.setExceptionOccursTheFirstTime(isExceptionsOccuringFirstTime);
+	private Map<ExceptionChain, List<ExceptionOccuranceRecord>> groupRecordsByExceptionChain(List<ExceptionOccuranceRecord> exceptionRecords) {
+		Map<ExceptionChain, List<ExceptionOccuranceRecord>> groupedExceptionRecords = new HashMap<ExceptionChain, List<ExceptionOccuranceRecord>>();
+		for (ExceptionOccuranceRecord currExceptionOccuranceRecord : exceptionRecords){
+			ExceptionChain currExceptionChain = currExceptionOccuranceRecord.getExceptionChain();
+			List<ExceptionOccuranceRecord> exceptionRecordsForExceptionChain = groupedExceptionRecords.get(currExceptionChain);
+			if (exceptionRecordsForExceptionChain == null){
+				exceptionRecordsForExceptionChain = new ArrayList<ExceptionOccuranceRecord>();
+				groupedExceptionRecords.put(currExceptionChain, exceptionRecordsForExceptionChain);
 			}
+			exceptionRecordsForExceptionChain.add(currExceptionOccuranceRecord);
+		}
+		return groupedExceptionRecords;
+	}
+
+
+	public void addExceptionContainers(Map<ExceptionChain, List<ExceptionOccuranceRecord>> recordsToChain, Boolean  isFistOccurance) {
+		for (Entry<ExceptionChain,  List<ExceptionOccuranceRecord>> currEqualCauseExceptionChainContainer : recordsToChain.entrySet()){
+			NamedExceptionChain namedExceptionChain = new NamedExceptionChain(currEqualCauseExceptionChainContainer.getKey(), currEqualCauseExceptionChainContainer.getValue().size());
 			namedExceptionChains.add(namedExceptionChain);
+			if (isFistOccurance != null){
+				namedExceptionChain.setExceptionOccursTheFirstTime(isFistOccurance);
+			}
 		}
 		sortNamedChainsAndSetNames();
 	}

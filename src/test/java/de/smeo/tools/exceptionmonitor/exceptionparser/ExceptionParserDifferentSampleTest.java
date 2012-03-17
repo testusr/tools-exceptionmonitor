@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCausedByChain;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChainCreator;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
-import de.smeo.tools.exceptionmonitor.exceptionparser.LoggedException;
+import de.smeo.tools.exceptionmonitor.exceptionparser.Exception;
 
 public class ExceptionParserDifferentSampleTest {
 	private final String BIG_SAMPLE = 
@@ -183,16 +183,16 @@ public class ExceptionParserDifferentSampleTest {
 		}
 
 		public void verifyExceptionChains(String[] ...chains) {
-			List<ExceptionCausedByChain> exceptionChains = exceptionParser.getExceptionChains();
-			assertEquals(chains.length, exceptionChains.size());
+			List<ExceptionOccuranceRecord> exceptionRecords = exceptionParser.getExceptionOccuranceRecords();
+			assertEquals(chains.length, exceptionRecords.size());
 			
 			for (int i=0; i < chains.length; i++){
-				verifyExceptionChain(exceptionChains.get(i), chains[i]);
+				verifyExceptionChain(exceptionRecords.get(i).getExceptionChain(), chains[i]);
 			}
 		}
 
-		private void verifyExceptionChain(ExceptionCausedByChain exceptionCausedByChain, String[] exceptionClassNames) {
-			List<LoggedException> exceptionsInChain = exceptionCausedByChain.getExceptions();
+		private void verifyExceptionChain(ExceptionChain exceptionCausedByChain, String[] exceptionClassNames) {
+			List<Exception> exceptionsInChain = exceptionCausedByChain.getExceptions();
 			assertEquals(exceptionClassNames.length, exceptionsInChain.size());
 			
 			for (int i=0; i < exceptionClassNames.length; i++){

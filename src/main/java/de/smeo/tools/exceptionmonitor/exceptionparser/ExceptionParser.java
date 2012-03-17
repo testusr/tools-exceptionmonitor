@@ -1,7 +1,11 @@
 package de.smeo.tools.exceptionmonitor.exceptionparser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 
@@ -20,27 +24,25 @@ public class ExceptionParser {
 	public final static String REGEXP_INIT = "<init>";
 	public final static String REGEXP_SOURCE_LINE = "\\([a-zA-Z_$][a-zA-Z\\d_$]*\\.java:[0-9]+\\)";
 	public final static String REGEXP_EXCEPTION_START = REGEXP_CLASSNAME + "(" + REGEXP_EXCEPTION_COMMENT + ")?";
-	public final static String REGEXP_EXCEPTION_START_CAUSED_BY = ExceptionCausedByChain.REGEXP_CAUSED_BY + " " + REGEXP_EXCEPTION_START;
+	public final static String REGEXP_EXCEPTION_START_CAUSED_BY = ExceptionChainCreator.REGEXP_CAUSED_BY + " " + REGEXP_EXCEPTION_START;
 	public final static String REGEXP_SOURCE_LINE_OR_UNKNOWN = REGEXP_SOURCE_LINE + "|" + REGEXP_TEXT;
 	public final static String REGEXP_STACKTRACE_MEMBER_AT = REGEXP_AT + " " + REGEXP_CLASSNAME + "(\\." + REGEXP_INIT + "){0,1}" + "("	+ REGEXP_SOURCE_LINE_OR_UNKNOWN + ")?";
 	
-	private List<LoggedException> collectedExceptions = new ArrayList<LoggedException>();
-	private List<ExceptionCausedByChain> exceptionChains = new ArrayList<ExceptionCausedByChain>();
+	private Map<String, ExceptionChain> exceptionChainToIdMap = new HashMap<String, ExceptionChain>();
 	
-	private LoggedException currException = null;
-	private ExceptionCausedByChain currExceptionCausedByChain = null; 
+	private List<Exception> collectedExceptions = new ArrayList<Exception>();
+	private Set<ExceptionChainCreator> exceptionChains = new HashSet<ExceptionChainCreator>();
+	private List<ExceptionOccuranceRecord> exceptionOccurances = new ArrayList<ExceptionOccuranceRecord>();
+	
+
+	private long currExceptionStartFileIndex = -1;
+	private Exception currException = null;
+	private ExceptionChainCreator currExceptionCausedByChain = null; 
 	private String previousLine = null;
 	
 	private long currLineIndex = 0;
 	
-	public List<EqualCauseExceptionChainContainer> getExceptionGroupedByRootCause(){
-		return EqualCauseExceptionContainerFactory.createEqualCauseContainers(getExceptionChains());
-	}
-	public List<ExceptionCausedByChain> getExceptionChains() {
-		return exceptionChains;
-	}
-
-	public List<LoggedException> getExceptions() {
+	public List<Exception> getExceptions() {
 		return collectedExceptions;
 	}
 
@@ -58,14 +60,15 @@ public class ExceptionParser {
 		}
 	} 
 	
-	protected void parseLine(String currLine) {
+	protected ExceptionOccuranceRecord parseLine(String currLine) {
+		ExceptionOccuranceRecord exceptionOccuranceRecord = null;
 		currLineIndex++;
 		String currLineTrimmed = currLine.trim();
 		if (previousLine != null){
 			if (firstLineMarksStartOfExceptionTrace(previousLine, currLineTrimmed)){
 				currException = createNewException(previousLine);
-				currExceptionCausedByChain = new ExceptionCausedByChain(currException);
-				currExceptionCausedByChain.setLineNumber(currLineIndex);
+				currExceptionStartFileIndex = currLineIndex-1;
+				currExceptionCausedByChain = new ExceptionChainCreator(currException);
 			}
 			
 			if (isCurrentlyFillingException()){
@@ -73,32 +76,42 @@ public class ExceptionParser {
 					currException.getStackTrace().addLine(previousLine);
 				} else 
 					if (firstLineIstStartsCausedByExceptionTrace(previousLine, currLineTrimmed)){
-						LoggedException newCausedByException = createNewException(removeCausedBy(previousLine));
+						Exception newCausedByException = createNewException(removeCausedBy(previousLine));
 						
 						currExceptionCausedByChain.addCausedBy(newCausedByException);
 						moveCurrExceptionToExceptionList();
 						currException = newCausedByException;
 				} else 
 					if(firstLineMarksEOFExceptionTrace(previousLine, currLineTrimmed)){
-						flush();
+						exceptionOccuranceRecord = flush();
 				}
 			}
 		}
 			
 		previousLine = currLineTrimmed;
+		return exceptionOccuranceRecord;
 	}
 
-	public void flush() {
+	public ExceptionOccuranceRecord flush() {
 		moveCurrExceptionToExceptionList();
+		ExceptionOccuranceRecord newExceptionOccuranceRecord = null;
 		if (currExceptionCausedByChain != null){
-			exceptionChains.add(currExceptionCausedByChain);
+			ExceptionChain newExceptionChain = currExceptionCausedByChain.createExceptionChain();
+			if (exceptionChainToIdMap.containsKey(newExceptionChain.getId())){
+				newExceptionChain = exceptionChainToIdMap.get(newExceptionChain.getId());
+			} else {
+				exceptionChainToIdMap.put(newExceptionChain.getId(), newExceptionChain);
+			}
+			newExceptionOccuranceRecord = new ExceptionOccuranceRecord(currExceptionStartFileIndex, newExceptionChain); 
+			exceptionOccurances.add(newExceptionOccuranceRecord);
 			currExceptionCausedByChain = null;
 		}
 		previousLine = null;
+		return newExceptionOccuranceRecord;
 	}
 	
 	private static String removeCausedBy(String line) {
-		return line.replace(ExceptionCausedByChain.REGEXP_CAUSED_BY, "").trim();
+		return line.replace(ExceptionChainCreator.REGEXP_CAUSED_BY, "").trim();
 	}
 
 	private void moveCurrExceptionToExceptionList() {
@@ -108,9 +121,9 @@ public class ExceptionParser {
 		}
 	}
 
-	private static LoggedException createNewException(String exceptionStartLine) {
-		LoggedException newException = new LoggedException(extractClassNameFromExceptionStart(exceptionStartLine));
-		newException.setComment(extractCommentFromExceptionStart(exceptionStartLine));
+	private static Exception createNewException(String exceptionStartLine) {
+		Exception newException = new Exception(extractClassNameFromExceptionStart(exceptionStartLine));
+		newException.setExceptionComment(extractCommentFromExceptionStart(exceptionStartLine));
 		return newException;
 	}
 
@@ -180,6 +193,10 @@ public class ExceptionParser {
 	public void clean() {
 		this.collectedExceptions.clear();
 		this.exceptionChains.clear();
+	}
+
+	public List<ExceptionOccuranceRecord> getExceptionOccuranceRecords() {
+		return exceptionOccurances;
 	}
 
 }
