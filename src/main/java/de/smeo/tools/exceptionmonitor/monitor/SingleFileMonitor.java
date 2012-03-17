@@ -5,7 +5,6 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.List;
 
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChain;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
 
@@ -41,6 +40,7 @@ public class SingleFileMonitor {
 	public synchronized void setFileMonitorState(FileMonitorState fileMonitorState){	
 		this.fileMonitorState = fileMonitorState;
 		exceptionParser.setCurrLineIndex(fileMonitorState.lastReadLineIndex);
+		exceptionParser.setFilename(monitoredFile.getAbsolutePath());
 	}
 	
 	public synchronized List<ExceptionOccuranceRecord> parseNewFileEntriesAndReturnExceptionRecords() 

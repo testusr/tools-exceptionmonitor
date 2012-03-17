@@ -41,6 +41,7 @@ public class ExceptionParser {
 	private String previousLine = null;
 	
 	private long currLineIndex = 0;
+	private String filename;
 	
 	public List<Exception> getExceptions() {
 		return collectedExceptions;
@@ -102,7 +103,7 @@ public class ExceptionParser {
 			} else {
 				exceptionChainToIdMap.put(newExceptionChain.getId(), newExceptionChain);
 			}
-			newExceptionOccuranceRecord = new ExceptionOccuranceRecord(currExceptionStartFileIndex, newExceptionChain); 
+			newExceptionOccuranceRecord = new ExceptionOccuranceRecord(filename, currExceptionStartFileIndex, newExceptionChain); 
 			exceptionOccurances.add(newExceptionOccuranceRecord);
 			currExceptionCausedByChain = null;
 		}
@@ -197,6 +198,10 @@ public class ExceptionParser {
 
 	public List<ExceptionOccuranceRecord> getExceptionOccuranceRecords() {
 		return exceptionOccurances;
+	}
+
+	public void setFilename(String absolutePath) {
+		this.filename = absolutePath;
 	}
 
 }
