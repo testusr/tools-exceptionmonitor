@@ -5,11 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
 
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChainCreator;
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
@@ -26,7 +28,8 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 public class ExceptionChain extends Identifiable implements Serializable  {
 	private static final long serialVersionUID = 7729660909453755254L;
 	
-	@OneToMany
+	@ManyToMany
+	@Cascade({ org.hibernate.annotations.CascadeType.ALL})
 	private List<Exception> causedByChain;
 	
 	public ExceptionChain(List<Exception> causedByChain) {

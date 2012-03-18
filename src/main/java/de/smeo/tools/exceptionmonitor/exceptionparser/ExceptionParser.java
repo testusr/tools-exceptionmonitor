@@ -33,8 +33,8 @@ public class ExceptionParser {
 	public final static String REGEXP_STACKTRACE_MEMBER_AT = REGEXP_AT + " " + REGEXP_CLASSNAME + "(\\." + REGEXP_INIT + "){0,1}" + "("	+ REGEXP_SOURCE_LINE_OR_UNKNOWN + ")?";
 	
 	private Map<String, ExceptionChain> exceptionChainToIdMap = new HashMap<String, ExceptionChain>();
+	private Map<String, Exception> collectedExceptions = new HashMap<String, Exception>();
 	
-	private List<Exception> collectedExceptions = new ArrayList<Exception>();
 	private Set<ExceptionChainCreator> exceptionChains = new HashSet<ExceptionChainCreator>();
 	private List<ExceptionOccuranceRecord> exceptionOccurances = new ArrayList<ExceptionOccuranceRecord>();
 	
@@ -48,7 +48,9 @@ public class ExceptionParser {
 	private String filename;
 	
 	public List<Exception> getExceptions() {
-		return collectedExceptions;
+		List<Exception> exceptionList = new ArrayList<Exception>();
+		exceptionList.addAll(collectedExceptions.values());
+		return exceptionList;
 	}
 
 	public ExceptionParser parseAndFlush(String exceptionText) {
@@ -96,7 +98,11 @@ public class ExceptionParser {
 
 	private void flushCurrException() {
 		Exception currException = currExceptionCreator.createException();
-		collectedExceptions.add(currException);
+		if (!collectedExceptions.containsKey(currException.getId())){
+			collectedExceptions.put(currException.getId(), currException);
+		} else {
+			currException = collectedExceptions.get(currException.getId());
+		}
 		currExceptionCausedByChainCreator.addCausedBy(currException);
 		currExceptionCreator = null;
 	}
@@ -111,7 +117,7 @@ public class ExceptionParser {
 			} else {
 				exceptionChainToIdMap.put(newExceptionChain.getId(), newExceptionChain);
 			}
-			newExceptionOccuranceRecord = new ExceptionOccuranceRecord(filename, currExceptionStartFileIndex, newExceptionChain); 
+			newExceptionOccuranceRecord = new ExceptionOccuranceRecord(filename, System.currentTimeMillis(), currExceptionStartFileIndex, newExceptionChain); 
 			exceptionOccurances.add(newExceptionOccuranceRecord);
 			currExceptionCausedByChainCreator = null;
 		}

@@ -11,6 +11,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Proxy;
 
@@ -31,6 +32,7 @@ public class ExceptionStackTrace extends Identifiable implements Serializable {
 	private static final long serialVersionUID = 1417805941439871079L;
 
 	@CollectionOfElements
+	@Cascade({ org.hibernate.annotations.CascadeType.ALL})
 	private List<String> lines;
 
 	public ExceptionStackTrace(List<String> stackTraceLines) {

@@ -2,17 +2,16 @@ package de.smeo.tools.exceptionmonitor.persistence;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
-import org.hibernate.annotations.Proxy;
-
 @MappedSuperclass
 @Access(AccessType.FIELD)
+
 public class Identifiable {
 	@Id
-//	@GeneratedValue(generator = "native")
+	@Column(unique=true)
 	private String id;
 
 	

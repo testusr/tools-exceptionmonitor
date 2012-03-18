@@ -2,15 +2,13 @@ package de.smeo.tools.exceptionmonitor.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
 
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
@@ -22,23 +20,27 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 @Entity
 @Table(name = "EMON_EXPOCCURANCE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class ExceptionOccuranceRecord  implements Serializable {
+public class ExceptionOccuranceRecord extends Identifiable implements Serializable {
 	private static final long serialVersionUID = 1549328823650420153L;
 
+	@ManyToOne
+	@Cascade({ org.hibernate.annotations.CascadeType.ALL})
 	private ExceptionChain exceptionChain;
 
 	private String filename;
 	private long filePosition;
-	private long time = -1;
+	private long time;
 	
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Integer id;
-	
-	public ExceptionOccuranceRecord(String filename, long filePosition, ExceptionChain exceptionChain) {
+	public ExceptionOccuranceRecord(String filename, long time, long filePosition, ExceptionChain exceptionChain) {
 		this.filename = filename;
 		this.filePosition = filePosition;
 		this.exceptionChain = exceptionChain;
+		this.time = time;
+		updateId();
+	}
+
+	private void updateId() {
+		setId(exceptionChain.getId() + "-" + (filename+filePosition+time).hashCode());
 	}
 
 	private ExceptionOccuranceRecord() {}

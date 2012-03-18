@@ -4,9 +4,13 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
 
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCreator;
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
@@ -16,6 +20,9 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Exception extends Identifiable implements Serializable  {
 	private static final long serialVersionUID = 7881699626118705339L;
+
+	@ManyToOne(optional = true, fetch = FetchType.EAGER)
+	@Cascade({ org.hibernate.annotations.CascadeType.ALL})
 	private ExceptionStackTrace stackTrace; 
 	private String exceptionClassName;
 	private String exceptionComment;
