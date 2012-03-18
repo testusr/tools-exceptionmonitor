@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChainCreator;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
-import de.smeo.tools.exceptionmonitor.exceptionparser.Exception;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCreator;
 
 public class ExceptionParserDifferentSampleTest {
 	private final String BIG_SAMPLE = 

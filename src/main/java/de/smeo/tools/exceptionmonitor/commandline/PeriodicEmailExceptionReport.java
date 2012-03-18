@@ -9,12 +9,11 @@ import java.util.Map;
 import javax.mail.MessagingException;
 
 import de.smeo.tools.exceptionmonitor.common.EmailDispatcher;
-import de.smeo.tools.exceptionmonitor.common.ExceptionDatabase;
-import de.smeo.tools.exceptionmonitor.common.ExceptionDatabase.CategorizedExceptions;
 import de.smeo.tools.exceptionmonitor.common.FileMonitorStateRepository;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChainCreator;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
 import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor;
+import de.smeo.tools.exceptionmonitor.persistence.ExceptionDatabase.CategorizedExceptions;
+import de.smeo.tools.exceptionmonitor.persistence.XmlFileBasedExceptionDatabase;
 
 public class PeriodicEmailExceptionReport {
 	private static final String FILE_MONITOR_STATES = "FileMonitorStates.cfg";
@@ -25,7 +24,7 @@ public class PeriodicEmailExceptionReport {
 	private Map<File, CategorizedExceptions> foundExceptionsToLogfile = new HashMap<File, CategorizedExceptions>();
 	private String configDirectory;
 	private FileMonitorStateRepository fileMonitorStates;
-	private ExceptionDatabase exceptionDatabase;
+	private XmlFileBasedExceptionDatabase exceptionDatabase;
 	private EmailDispatcher emailDispatcher;
 	private String targetEmailAdress;
 
@@ -67,7 +66,7 @@ public class PeriodicEmailExceptionReport {
 							.categorizeExceptions(logFile,
 									foundExceptions);
 					foundExceptionsToLogfile.put(logFile, categorizedFoundExeptions);
-					exceptionDatabase.updateDatabase(logFile, foundExceptions);
+					exceptionDatabase.updateDatabase(foundExceptions);
 				}
 			}
 		}
@@ -77,7 +76,7 @@ public class PeriodicEmailExceptionReport {
 		this.configDirectory = configDirectory + File.separatorChar;
 		this.fileMonitorStates = new FileMonitorStateRepository(configDirectory
 				+ File.separator + FILE_MONITOR_STATES);
-		this.exceptionDatabase = new ExceptionDatabase(configDirectory
+		this.exceptionDatabase = new XmlFileBasedExceptionDatabase(configDirectory
 				+ File.separator + EXCEPTION_DATABASE);
 		this.emailDispatcher = new EmailDispatcher(configDirectory
 				+ File.separator + EMAIL_SERVER);

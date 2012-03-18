@@ -36,8 +36,8 @@ public class ExceptionParser {
 	
 
 	private long currExceptionStartFileIndex = -1;
-	private Exception currException = null;
-	private ExceptionChainCreator currExceptionCausedByChain = null; 
+	private ExceptionCreator currExceptionCreator = null;
+	private ExceptionChainCreator currExceptionCausedByChainCreator = null;
 	private String previousLine = null;
 	
 	private long currLineIndex = 0;
@@ -67,21 +67,18 @@ public class ExceptionParser {
 		String currLineTrimmed = currLine.trim();
 		if (previousLine != null){
 			if (firstLineMarksStartOfExceptionTrace(previousLine, currLineTrimmed)){
-				currException = createNewException(previousLine);
+				currExceptionCreator = createNewExceptionCreator(previousLine);
 				currExceptionStartFileIndex = currLineIndex-1;
-				currExceptionCausedByChain = new ExceptionChainCreator(currException);
+				currExceptionCausedByChainCreator = new ExceptionChainCreator();
 			}
 			
 			if (isCurrentlyFillingException()){
 				if (firstLineIsPartOfCurrentException(previousLine, currLineTrimmed)){
-					currException.getStackTrace().addLine(previousLine);
+					currExceptionCreator.addLine(previousLine);
 				} else 
 					if (firstLineIstStartsCausedByExceptionTrace(previousLine, currLineTrimmed)){
-						Exception newCausedByException = createNewException(removeCausedBy(previousLine));
-						
-						currExceptionCausedByChain.addCausedBy(newCausedByException);
-						moveCurrExceptionToExceptionList();
-						currException = newCausedByException;
+						flushCurrException();
+						currExceptionCreator = createNewExceptionCreator(removeCausedBy(previousLine));
 				} else 
 					if(firstLineMarksEOFExceptionTrace(previousLine, currLineTrimmed)){
 						exceptionOccuranceRecord = flush();
@@ -93,11 +90,18 @@ public class ExceptionParser {
 		return exceptionOccuranceRecord;
 	}
 
+	private void flushCurrException() {
+		Exception currException = currExceptionCreator.createException();
+		collectedExceptions.add(currException);
+		currExceptionCausedByChainCreator.addCausedBy(currException);
+		currExceptionCreator = null;
+	}
+
 	public ExceptionOccuranceRecord flush() {
-		moveCurrExceptionToExceptionList();
 		ExceptionOccuranceRecord newExceptionOccuranceRecord = null;
-		if (currExceptionCausedByChain != null){
-			ExceptionChain newExceptionChain = currExceptionCausedByChain.createExceptionChain();
+		flushCurrException();
+		if (currExceptionCausedByChainCreator.size() > 0){
+			ExceptionChain newExceptionChain = currExceptionCausedByChainCreator.createExceptionChain();
 			if (exceptionChainToIdMap.containsKey(newExceptionChain.getId())){
 				newExceptionChain = exceptionChainToIdMap.get(newExceptionChain.getId());
 			} else {
@@ -105,9 +109,10 @@ public class ExceptionParser {
 			}
 			newExceptionOccuranceRecord = new ExceptionOccuranceRecord(filename, currExceptionStartFileIndex, newExceptionChain); 
 			exceptionOccurances.add(newExceptionOccuranceRecord);
-			currExceptionCausedByChain = null;
+			currExceptionCausedByChainCreator = null;
 		}
 		previousLine = null;
+		currExceptionCreator = null;
 		return newExceptionOccuranceRecord;
 	}
 	
@@ -115,17 +120,10 @@ public class ExceptionParser {
 		return line.replace(ExceptionChainCreator.REGEXP_CAUSED_BY, "").trim();
 	}
 
-	private void moveCurrExceptionToExceptionList() {
-		if (currException != null){
-			collectedExceptions.add(currException);
-			currException = null;
-		}
-	}
-
-	private static Exception createNewException(String exceptionStartLine) {
-		Exception newException = new Exception(extractClassNameFromExceptionStart(exceptionStartLine));
-		newException.setExceptionComment(extractCommentFromExceptionStart(exceptionStartLine));
-		return newException;
+	private static ExceptionCreator createNewExceptionCreator(String exceptionStartLine) {
+		ExceptionCreator newExceptionCreator = new ExceptionCreator(extractClassNameFromExceptionStart(exceptionStartLine));
+		newExceptionCreator.setExceptionComment(extractCommentFromExceptionStart(exceptionStartLine));
+		return newExceptionCreator;
 	}
 
 	private static String extractCommentFromExceptionStart(String exceptionStartLine) {
@@ -151,7 +149,7 @@ public class ExceptionParser {
 
 	
 	private boolean isCurrentlyFillingException() {
-		return (currException != null);
+		return (currExceptionCreator != null);
 	}
 
 	protected boolean firstLineMarksStartOfExceptionTrace(String firstLine, String secondLine){

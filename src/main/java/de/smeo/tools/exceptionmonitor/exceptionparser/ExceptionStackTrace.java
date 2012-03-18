@@ -1,8 +1,10 @@
 package de.smeo.tools.exceptionmonitor.exceptionparser;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
 /**
  * Collection of lines containing the stack trace of the exception. Capable of 
@@ -11,8 +13,13 @@ import java.util.List;
  * @author smeo
  *
  */
-public class ExceptionStackTrace implements Serializable {
+public class ExceptionStackTrace extends Identifiable {
 	private List<String> lines = new ArrayList<String>();
+
+	public ExceptionStackTrace(List<String> stackTraceLines) {
+		super(createId(stackTraceLines));
+		this.lines = Collections.unmodifiableList(stackTraceLines);
+	}
 
 	public void addLine(String stackTraceMemberLine) {
 		lines.add(stackTraceMemberLine);
@@ -23,19 +30,9 @@ public class ExceptionStackTrace implements Serializable {
 	}
 
 	public List<String> getSourcePath() {
-		List<String> sourcePath = new ArrayList<String>();
-		for (String currStackTraceLine : lines){
-			sourcePath.add(exctractSourceEntry(currStackTraceLine));
-		}
-		return sourcePath;
+		return getSourceEntries(lines);
 	}
 
-	private String exctractSourceEntry(String stackTraceLine) {
-		if (stackTraceLine.contains("(") && stackTraceLine.contains(")")){
-			return stackTraceLine.substring((stackTraceLine.indexOf("(")+1), stackTraceLine.indexOf(")"));
-		}
-		return "";
-	}
 
 	List<String> getLines() {
 		return lines;
@@ -44,6 +41,29 @@ public class ExceptionStackTrace implements Serializable {
 	@Override
 	public String toString() {
 		return lines.toString();
+	}
+
+	private static List<String> getSourceEntries(List<String> lines) {
+		List<String> sourcePath = new ArrayList<String>();
+		for (String currStackTraceLine : lines){
+			sourcePath.add(exctractSourceEntry(currStackTraceLine));
+		}
+		return sourcePath;
+	}
+
+	private static String exctractSourceEntry(String stackTraceLine) {
+		if (stackTraceLine.contains("(") && stackTraceLine.contains(")")){
+			return stackTraceLine.substring((stackTraceLine.indexOf("(")+1), stackTraceLine.indexOf(")"));
+		}
+		return "";
+	}
+
+	private static String createId(List<String> elements) {
+		StringBuffer stringBuffer = new StringBuffer();
+		for (String currElement : getSourceEntries(elements)){
+			stringBuffer.append(currElement);
+		}
+		return ""+stringBuffer.toString().hashCode();
 	}
 
 

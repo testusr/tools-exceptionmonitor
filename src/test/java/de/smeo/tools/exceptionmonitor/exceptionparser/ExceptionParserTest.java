@@ -10,7 +10,7 @@ import org.junit.Test;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChainCreator;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
 import de.smeo.tools.exceptionmonitor.exceptionparser.LogFileExceptionParser;
-import de.smeo.tools.exceptionmonitor.exceptionparser.Exception;
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCreator;
 
 public class ExceptionParserTest {
 	private static final String EXCEPTION_SAMPLE1 = "" +

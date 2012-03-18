@@ -1,23 +1,21 @@
 package de.smeo.tools.exceptionmonitor.exceptionparser;
 
+import java.util.Collections;
 import java.util.List;
+
+import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
 /**
  * Immutable exception chain.
  * @author smeo
  *
  */
-public class ExceptionChain {
-	private final String id;
+public class ExceptionChain extends Identifiable {
 	private final List<Exception> causedByChain;
 	
 	public ExceptionChain(List<Exception> causedByChain) {
-		this.causedByChain = causedByChain;
-		this.id = createId(causedByChain);
-	}
-	
-	public String getId() {
-		return id;
+		super(createId(causedByChain));
+		this.causedByChain = Collections.unmodifiableList(causedByChain);
 	}
 
 	public List<Exception> getExceptions() {
@@ -26,31 +24,6 @@ public class ExceptionChain {
 
 	public String getFirstExceptionName() {
 		return causedByChain.get(0).getExceptionClassName();
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ExceptionChain other = (ExceptionChain) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
 	}
 
 	@Override
@@ -65,7 +38,6 @@ public class ExceptionChain {
 		}
 		return stringBuffer.toString();
 	}
-
 	
 	/**
 	 * Generates an id based on the exception chains source path. The same 

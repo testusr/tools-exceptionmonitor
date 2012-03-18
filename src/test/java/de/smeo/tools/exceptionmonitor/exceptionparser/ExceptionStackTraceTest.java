@@ -2,6 +2,7 @@ package de.smeo.tools.exceptionmonitor.exceptionparser;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -52,10 +53,12 @@ public class ExceptionStackTraceTest {
 	private ExceptionStackTrace createExceptionStackTrace(
 			String stackTraceSample) {
 		String[] splittedSample = STACK_TRACE_SAMPLE.split("\n");
-		ExceptionStackTrace exceptionStackTrace = new ExceptionStackTrace();
+		List<String> strackTraceLines = new ArrayList<String>();
 		for (String currSampleLine : splittedSample){
-			exceptionStackTrace.addLine(currSampleLine);
+			strackTraceLines.add(currSampleLine);
 		}
+		ExceptionStackTrace exceptionStackTrace = new ExceptionStackTrace(strackTraceLines);
+
 		return exceptionStackTrace;
 	}
 
