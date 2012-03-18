@@ -32,11 +32,12 @@
         <property name="hbm2ddl.auto">update</property>
 
         <mapping resource="de/smeo/tools/exceptionmonitor/exceptionparser/ExceptionStackTrace.hbm.xml"/>
+		<mapping resource="de/smeo/tools/exceptionmonitor/persistence/FileExceptionContainer.hbm.xml"/>
+        <mapping resource="de/smeo/tools/exceptionmonitor/exceptionparser/ExceptionChain.hbm.xml"/> 
+
         <mapping resource="de/smeo/tools/exceptionmonitor/exceptionparser/Exception.hbm.xml"/>
-        <mapping resource="de/smeo/tools/exceptionmonitor/exceptionparser/ExceptionChain.hbm.xml"/>
         <mapping resource="de/smeo/tools/exceptionmonitor/exceptionparser/ExceptionOccuranceRecord.hbm.xml"/>
        
- 		<mapping resource="de/smeo/tools/exceptionmonitor/persistence/FileExceptionContainer.hbm.xml"/>
     </session-factory>
 
 </hibernate-configuration>

@@ -8,14 +8,14 @@ public class HibernateBasedExceptionDatabase extends ExceptionDatabase {
 
 	@Override
 	protected void persist(List<FileExceptionContainer> exceptionDataBase) {
-//        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-//        session.beginTransaction();
-//        for (FileExceptionContainer currFileExceptionContainer : exceptionDataBase){
-//        	session.save(currFileExceptionContainer);
-//        }
-//
-//        session.getTransaction().commit();
-//		HibernateUtil.getSessionFactory().close();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        for (FileExceptionContainer currFileExceptionContainer : exceptionDataBase){
+        	session.save(currFileExceptionContainer);
+        }
+
+        session.getTransaction().commit();
+		HibernateUtil.getSessionFactory().close();
 	}
 
 

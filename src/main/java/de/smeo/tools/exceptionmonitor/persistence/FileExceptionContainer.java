@@ -37,4 +37,26 @@ public class FileExceptionContainer extends Identifiable {
 	public Object getAbsoluteFilePath() {
 		return absFilePath;
 	}
+
+	public String getAbsFilePath() {
+		return absFilePath;
+	}
+
+	public void setAbsFilePath(String absFilePath) {
+		this.absFilePath = absFilePath;
+	}
+
+	public List<ExceptionOccuranceRecord> getExceptions() {
+		return exceptions;
+	}
+
+	public void setExceptions(List<ExceptionOccuranceRecord> exceptions) {
+		this.exceptions = exceptions;
+	}
+
+	public void setExceptionChains(Set<ExceptionChain> exceptionChains) {
+		this.exceptionChains = exceptionChains;
+	}
+	
+	
 }

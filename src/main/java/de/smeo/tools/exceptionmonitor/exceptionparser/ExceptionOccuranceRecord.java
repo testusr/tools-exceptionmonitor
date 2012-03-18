@@ -7,7 +7,7 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
  *
  */
 public class ExceptionOccuranceRecord extends Identifiable {
-	private final ExceptionChain exceptionChain;
+	private ExceptionChain exceptionChain;
 
 	private String filename;
 	private long filePosition;
@@ -46,5 +46,19 @@ public class ExceptionOccuranceRecord extends Identifiable {
 	public ExceptionChain getExceptionChain() {
 		return exceptionChain;
 	}
+
+	public long getFilePosition() {
+		return filePosition;
+	}
+
+	public void setFilePosition(long filePosition) {
+		this.filePosition = filePosition;
+	}
+
+	public void setExceptionChain(ExceptionChain exceptionChain) {
+		this.exceptionChain = exceptionChain;
+	}
+	
+	
 	
 }

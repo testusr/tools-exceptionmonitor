@@ -85,4 +85,6 @@ public class Exception extends Identifiable {
 		}
 		return ""+stringBuffer.toString().hashCode();
 	}
+	
+	
 }

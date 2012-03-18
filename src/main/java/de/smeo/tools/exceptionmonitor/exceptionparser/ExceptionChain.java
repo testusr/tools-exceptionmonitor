@@ -59,6 +59,13 @@ public class ExceptionChain extends Identifiable {
 		return ""+idString.toString().hashCode();
 	}
 
+	public List<Exception> getCausedByChain() {
+		return causedByChain;
+	}
+
+	public void setCausedByChain(List<Exception> causedByChain) {
+		this.causedByChain = causedByChain;
+	}
 
 
 }
