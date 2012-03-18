@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.hibernate.annotations.Entity;
+
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
 /**
@@ -13,13 +15,16 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
  * @author smeo
  *
  */
+
 public class ExceptionStackTrace extends Identifiable {
 	private List<String> lines = new ArrayList<String>();
 
 	public ExceptionStackTrace(List<String> stackTraceLines) {
 		super(createId(stackTraceLines));
-		this.lines = Collections.unmodifiableList(stackTraceLines);
+		this.lines = stackTraceLines;
 	}
+	
+	public ExceptionStackTrace() {}
 
 	public void addLine(String stackTraceMemberLine) {
 		lines.add(stackTraceMemberLine);
@@ -35,7 +40,7 @@ public class ExceptionStackTrace extends Identifiable {
 
 
 	List<String> getLines() {
-		return lines;
+		return Collections.unmodifiableList(lines);
 	}
 
 	@Override

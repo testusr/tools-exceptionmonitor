@@ -1,10 +1,12 @@
 package de.smeo.tools.exceptionmonitor.exceptionparser;
 
+import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
+
 /**
  * The unique occurance of a exception chain within a log file
  *
  */
-public class ExceptionOccuranceRecord {
+public class ExceptionOccuranceRecord extends Identifiable {
 	private final ExceptionChain exceptionChain;
 
 	private String filename;
@@ -12,7 +14,6 @@ public class ExceptionOccuranceRecord {
 	private long time = -1;
 	
 	public ExceptionOccuranceRecord(String filename, long filePosition, ExceptionChain exceptionChain) {
-		super();
 		this.filename = filename;
 		this.filePosition = filePosition;
 		this.exceptionChain = exceptionChain;

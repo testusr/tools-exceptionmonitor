@@ -5,9 +5,9 @@ import java.util.List;
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
 public class Exception extends Identifiable {
-	private final ExceptionStackTrace stackTrace; 
-	private final String exceptionClassName;
-	private final String exceptionComment;
+	private ExceptionStackTrace stackTrace; 
+	private String exceptionClassName;
+	private String exceptionComment;
 	
 	public Exception(String exceptionClassName, String  exceptionComment, List<String> stackTraceLines){
 		super(createId(exceptionClassName, exceptionComment, stackTraceLines));
@@ -16,6 +16,8 @@ public class Exception extends Identifiable {
 		this.stackTrace = new ExceptionStackTrace(stackTraceLines);
 	}
 
+	private Exception(){};
+	
 	public boolean hasEqualRootCause(ExceptionCreator loggedException) {
 		if (loggedException.getExceptionClassName().equals(exceptionClassName)){
 			return stackTrace.hasEqualCharacteristics(stackTrace);
@@ -29,6 +31,27 @@ public class Exception extends Identifiable {
 
 	public String getExceptionClassName() {
 		return exceptionClassName;
+	}
+	
+
+	public ExceptionStackTrace getStackTrace() {
+		return stackTrace;
+	}
+
+	public void setStackTrace(ExceptionStackTrace stackTrace) {
+		this.stackTrace = stackTrace;
+	}
+
+	public String getExceptionComment() {
+		return exceptionComment;
+	}
+
+	public void setExceptionComment(String exceptionComment) {
+		this.exceptionComment = exceptionComment;
+	}
+
+	public void setExceptionClassName(String exceptionClassName) {
+		this.exceptionClassName = exceptionClassName;
 	}
 
 	@Override

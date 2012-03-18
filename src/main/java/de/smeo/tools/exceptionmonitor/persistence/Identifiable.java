@@ -9,6 +9,9 @@ public class Identifiable {
 		this.id = id;
 	}
 
+	public Identifiable() {
+	}
+	
 	public Identifiable(int id) {
 		this(""+id);
 	}

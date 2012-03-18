@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="de.smeo.tools.exceptionmonitor.exceptionparser">
+
+	<class name="ExceptionStackTrace" table="EMON_EXCSTRACE">
+		<id name="id" column="ID">
+			<generator class="native" />
+		</id>
+		
+        <set name="lines" table="EMON_EXCSTRACE_STACKLINE">
+            <key column="EXC_SSTRACE_ID"/>
+            <element type="string" column="STACK_LINE"/>
+        </set>
+	</class>
+
+</hibernate-mapping>

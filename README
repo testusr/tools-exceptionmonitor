@@ -1,0 +1,5 @@
+#start hsqldb
+ mvn exec:java -Dexec.mainClass="org.hsqldb.Server" -Dexec.args="-database file:target/data/hsqldb"
+ 
+ 
+ mvn exec:java -Dexec.mainClass="de.smeo.tools.exceptionmonitor.commandline.PeriodicEmailExceptionReport" -Dexec.args="/tmp/ resources/exceptionsamples.txt smeo@gmx.de,smeo2@gmx.de"

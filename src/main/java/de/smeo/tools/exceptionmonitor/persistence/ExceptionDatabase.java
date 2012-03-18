@@ -13,17 +13,23 @@ import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
 public abstract class ExceptionDatabase {
 	protected List<FileExceptionContainer> exceptionDataBase = new ArrayList<FileExceptionContainer>();
 	
-	abstract void saveStorageToFile();
+	public void updateDatabase(List<ExceptionOccuranceRecord> newExceptions) {
+		for (ExceptionOccuranceRecord currExceptionRecord : newExceptions){
+			FileExceptionContainer fileExceptionContainer = getOrCreateFileExceptionContainer(currExceptionRecord.getFilename());
+			fileExceptionContainer.addExceptionRecord(currExceptionRecord);
+		}
+		persist(exceptionDataBase);
+	}
 	
-	abstract void updateDatabase(List<ExceptionOccuranceRecord> newExceptions) ;
-	
-	FileExceptionContainer getOrCreateFileExceptionContainer(File file){
+	protected abstract void persist(List<FileExceptionContainer> exceptionDataBase);
+
+	FileExceptionContainer getOrCreateFileExceptionContainer(String filename){
 		for (FileExceptionContainer currExceptionContainer : exceptionDataBase){
-			if (currExceptionContainer.getAbsoluteFilePath().equals(file.getAbsolutePath())){
+			if (currExceptionContainer.getAbsoluteFilePath().equals(filename)){
 				return currExceptionContainer;
 			}
 		}
-		FileExceptionContainer newFileExceptionContainer = new FileExceptionContainer(file.getAbsolutePath());
+		FileExceptionContainer newFileExceptionContainer = new FileExceptionContainer(filename);
 		exceptionDataBase.add(newFileExceptionContainer);
 		return newFileExceptionContainer;
 	}
@@ -37,7 +43,7 @@ public abstract class ExceptionDatabase {
 		for (ExceptionOccuranceRecord currExceptionRecord : newExceptionRecords){
 			boolean isKnownException = false;
 	
-			Set<ExceptionChain> exceptionCausedByChainsForFile = getOrCreateFileExceptionContainer(file).getExceptionChains();
+			Set<ExceptionChain> exceptionCausedByChainsForFile = getOrCreateFileExceptionContainer(file.getAbsolutePath()).getExceptionChains();
 			isKnownException = exceptionCausedByChainsForFile.contains(currExceptionRecord.getExceptionChain());
 			if (isKnownException){
 				categorizedExceptions.addKnownException(currExceptionRecord);

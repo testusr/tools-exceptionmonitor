@@ -31,7 +31,7 @@ public class XmlFileBasedExceptionDatabase extends ExceptionDatabase {
 		}
 	}
 	
-	public void saveStorageToFile() {
+	private void saveToFile() {
 		XmlUtils.writeObjectToXmlFile(exceptionDataBase, storageFile);
 	}
 	
@@ -40,29 +40,15 @@ public class XmlFileBasedExceptionDatabase extends ExceptionDatabase {
 		if (!storageFile.exists()){
 			try {
 				storageFile.createNewFile();
-				saveStorageToFile();
+				saveToFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void updateDatabase(List<ExceptionOccuranceRecord> newExceptions) {
-		for (ExceptionOccuranceRecord currExceptionRecord : newExceptions){
-			FileExceptionContainer fileExceptionContainer = getOrCreateFileExceptionContainer(currExceptionRecord.getFilename());
-			fileExceptionContainer.addExceptionRecord(currExceptionRecord);
-		}
+	@Override
+	protected void persist(List<FileExceptionContainer> exceptionDataBase) {
+		saveToFile();
 	}
-	
-	FileExceptionContainer getOrCreateFileExceptionContainer(String filename){
-		for (FileExceptionContainer currExceptionContainer : exceptionDataBase){
-			if (currExceptionContainer.getAbsoluteFilePath().equals(filename)){
-				return currExceptionContainer;
-			}
-		}
-		FileExceptionContainer newFileExceptionContainer = new FileExceptionContainer(filename);
-		exceptionDataBase.add(newFileExceptionContainer);
-		return newFileExceptionContainer;
-	}
-
 }

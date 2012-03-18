@@ -10,7 +10,7 @@ import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChain;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
 
 public class FileExceptionContainer extends Identifiable {
-	private final String absFilePath;
+	private String absFilePath;
 	private Set<ExceptionChain> exceptionChains = new HashSet<ExceptionChain>();
 	private List<ExceptionOccuranceRecord> exceptions = new ArrayList<ExceptionOccuranceRecord>();
 	
@@ -18,6 +18,8 @@ public class FileExceptionContainer extends Identifiable {
 		super(absolutePath.hashCode());
 		this.absFilePath = absolutePath;
 	}
+	
+	public FileExceptionContainer() {}
 
 	public void addExceptionRecord(ExceptionOccuranceRecord exceptionRecord) {
 		exceptions.add(exceptionRecord);

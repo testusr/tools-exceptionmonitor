@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="de.smeo.tools.exceptionmonitor.persistence">
+
+	<class name="FileExceptionContainer" table="EXCPT_EXCCONTAINER">
+		<id name="id" column="ID">
+			<generator class="native" />
+		</id>
+       
+        <set name="exceptionChains" table="EXCPT_CNT_CHAIN">
+            <key column="EXC_CNT_ID"/>
+            <element type="ExceptionChain" column="EXCEPTION_ID"/>
+        </set>
+       
+        <set name="exceptions" table="EXCPT_CNT_EXCEPT">
+            <key column="EXC_CNT_ID"/>
+            <element type="ExceptionOccuranceRecord" column="EXCEPTION_ID"/>
+        </set>
+	</class>
+
+</hibernate-mapping>

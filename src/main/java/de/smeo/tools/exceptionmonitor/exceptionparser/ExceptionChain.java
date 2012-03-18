@@ -11,15 +11,17 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
  *
  */
 public class ExceptionChain extends Identifiable {
-	private final List<Exception> causedByChain;
+	private List<Exception> causedByChain;
 	
 	public ExceptionChain(List<Exception> causedByChain) {
 		super(createId(causedByChain));
-		this.causedByChain = Collections.unmodifiableList(causedByChain);
+		this.causedByChain = causedByChain;
 	}
+	
+	private ExceptionChain(){}
 
 	public List<Exception> getExceptions() {
-		return causedByChain;
+		return Collections.unmodifiableList(causedByChain);
 	}
 
 	public String getFirstExceptionName() {
