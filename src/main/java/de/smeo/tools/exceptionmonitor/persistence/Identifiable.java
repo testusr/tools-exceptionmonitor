@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.hibernate.annotations.Proxy;
+
 @MappedSuperclass
 @Access(AccessType.FIELD)
 public class Identifiable {

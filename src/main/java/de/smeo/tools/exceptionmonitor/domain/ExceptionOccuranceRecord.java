@@ -2,7 +2,12 @@ package de.smeo.tools.exceptionmonitor.domain;
 
 import java.io.Serializable;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
@@ -17,7 +22,7 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 @Entity
 @Table(name = "EMON_EXPOCCURANCE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class ExceptionOccuranceRecord extends Identifiable implements Serializable {
+public class ExceptionOccuranceRecord  implements Serializable {
 	private static final long serialVersionUID = 1549328823650420153L;
 
 	private ExceptionChain exceptionChain;
@@ -26,12 +31,18 @@ public class ExceptionOccuranceRecord extends Identifiable implements Serializab
 	private long filePosition;
 	private long time = -1;
 	
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+	private Integer id;
+	
 	public ExceptionOccuranceRecord(String filename, long filePosition, ExceptionChain exceptionChain) {
 		this.filename = filename;
 		this.filePosition = filePosition;
 		this.exceptionChain = exceptionChain;
 	}
 
+	private ExceptionOccuranceRecord() {}
+	
 	public String getFilename() {
 		return filename;
 	}

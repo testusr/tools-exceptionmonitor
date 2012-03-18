@@ -11,6 +11,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.Proxy;
+
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
 /**
@@ -27,7 +30,7 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 public class ExceptionStackTrace extends Identifiable implements Serializable {
 	private static final long serialVersionUID = 1417805941439871079L;
 
-	@ElementCollection
+	@CollectionOfElements
 	private List<String> lines;
 
 	public ExceptionStackTrace(List<String> stackTraceLines) {

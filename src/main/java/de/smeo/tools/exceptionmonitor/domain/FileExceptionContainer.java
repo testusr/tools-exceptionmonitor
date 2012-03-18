@@ -7,12 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
 
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
@@ -24,9 +27,11 @@ public class FileExceptionContainer extends Identifiable implements Serializable
 	
 	private String absFilePath;
 	
-	@OneToMany
+	@Transient
 	private Set<ExceptionChain> exceptionChains = new HashSet<ExceptionChain>();
+	
 	@OneToMany
+	@Cascade({ org.hibernate.annotations.CascadeType.ALL})
 	private List<ExceptionOccuranceRecord> exceptions = new ArrayList<ExceptionOccuranceRecord>();
 	
 	public FileExceptionContainer(String absolutePath) {
