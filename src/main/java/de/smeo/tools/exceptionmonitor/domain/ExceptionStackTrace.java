@@ -1,8 +1,15 @@
-package de.smeo.tools.exceptionmonitor.exceptionparser;
+package de.smeo.tools.exceptionmonitor.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
@@ -14,7 +21,13 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
  *
  */
 
-public class ExceptionStackTrace extends Identifiable {
+@Entity
+@Table(name = "EMON_EXPSTRACE")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class ExceptionStackTrace extends Identifiable implements Serializable {
+	private static final long serialVersionUID = 1417805941439871079L;
+
+	@ElementCollection
 	private List<String> lines;
 
 	public ExceptionStackTrace(List<String> stackTraceLines) {

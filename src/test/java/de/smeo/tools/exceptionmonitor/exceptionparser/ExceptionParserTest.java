@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.smeo.tools.exceptionmonitor.domain.Exception;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionOccuranceRecord;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChainCreator;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
 import de.smeo.tools.exceptionmonitor.exceptionparser.LogFileExceptionParser;

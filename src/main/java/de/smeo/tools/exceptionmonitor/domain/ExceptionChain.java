@@ -1,8 +1,17 @@
-package de.smeo.tools.exceptionmonitor.exceptionparser;
+package de.smeo.tools.exceptionmonitor.domain;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChainCreator;
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
 /**
@@ -10,7 +19,14 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
  * @author smeo
  *
  */
-public class ExceptionChain extends Identifiable {
+
+@Entity
+@Table(name = "EMON_EXCEPTIONCHAIN")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class ExceptionChain extends Identifiable implements Serializable  {
+	private static final long serialVersionUID = 7729660909453755254L;
+	
+	@OneToMany
 	private List<Exception> causedByChain;
 	
 	public ExceptionChain(List<Exception> causedByChain) {

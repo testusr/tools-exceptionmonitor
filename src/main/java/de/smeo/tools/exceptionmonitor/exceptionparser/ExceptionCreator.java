@@ -3,6 +3,8 @@ package de.smeo.tools.exceptionmonitor.exceptionparser;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.smeo.tools.exceptionmonitor.domain.Exception;
+
 
 public class ExceptionCreator {
 	private List<String> stackTraceLines = new ArrayList<String>();

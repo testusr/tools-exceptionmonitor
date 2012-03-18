@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChain;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionChain;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionOccuranceRecord;
+import de.smeo.tools.exceptionmonitor.domain.FileExceptionContainer;
 
 public abstract class ExceptionDatabase {
 	protected List<FileExceptionContainer> exceptionDataBase = new ArrayList<FileExceptionContainer>();

@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import de.smeo.tools.exceptionmonitor.domain.Exception;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionChain;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionOccuranceRecord;
+
 
 /**
  * Is parsing a text file or a string and extracts the java exceptions with its stack traces.

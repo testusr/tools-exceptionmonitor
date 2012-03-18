@@ -1,10 +1,21 @@
-package de.smeo.tools.exceptionmonitor.exceptionparser;
+package de.smeo.tools.exceptionmonitor.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+
+import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionCreator;
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
-public class Exception extends Identifiable {
+@Entity
+@Table(name = "EMON_EXCEPTION")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class Exception extends Identifiable implements Serializable  {
+	private static final long serialVersionUID = 7881699626118705339L;
 	private ExceptionStackTrace stackTrace; 
 	private String exceptionClassName;
 	private String exceptionComment;

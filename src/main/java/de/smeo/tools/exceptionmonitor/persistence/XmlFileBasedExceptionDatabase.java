@@ -9,8 +9,9 @@ import java.util.Map;
 import java.util.Set;
 
 import de.smeo.tools.exceptionmonitor.common.XmlUtils;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChain;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionChain;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionOccuranceRecord;
+import de.smeo.tools.exceptionmonitor.domain.FileExceptionContainer;
 
 /**
  * Storage for know exceptions and source for statistics etc

@@ -1,4 +1,11 @@
-package de.smeo.tools.exceptionmonitor.exceptionparser;
+package de.smeo.tools.exceptionmonitor.domain;
+
+import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 
 import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
 
@@ -6,7 +13,13 @@ import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
  * The unique occurance of a exception chain within a log file
  *
  */
-public class ExceptionOccuranceRecord extends Identifiable {
+
+@Entity
+@Table(name = "EMON_EXPOCCURANCE")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class ExceptionOccuranceRecord extends Identifiable implements Serializable {
+	private static final long serialVersionUID = 1549328823650420153L;
+
 	private ExceptionChain exceptionChain;
 
 	private String filename;

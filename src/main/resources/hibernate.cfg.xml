@@ -31,13 +31,11 @@
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">update</property>
 
-        <mapping resource="de/smeo/tools/exceptionmonitor/exceptionparser/ExceptionStackTrace.hbm.xml"/>
-		<mapping resource="de/smeo/tools/exceptionmonitor/persistence/FileExceptionContainer.hbm.xml"/>
-        <mapping resource="de/smeo/tools/exceptionmonitor/exceptionparser/ExceptionChain.hbm.xml"/> 
-
-        <mapping resource="de/smeo/tools/exceptionmonitor/exceptionparser/Exception.hbm.xml"/>
-        <mapping resource="de/smeo/tools/exceptionmonitor/exceptionparser/ExceptionOccuranceRecord.hbm.xml"/>
-       
+		<mapping class="de.smeo.tools.exceptionmonitor.domain.FileExceptionContainer"/>
+		<mapping class="de.smeo.tools.exceptionmonitor.domain.Exception"/>
+		<mapping class="de.smeo.tools.exceptionmonitor.domain.ExceptionChain"/>
+		<mapping class="de.smeo.tools.exceptionmonitor.domain.ExceptionOccuranceRecord"/>
+		<mapping class="de.smeo.tools.exceptionmonitor.domain.ExceptionStackTrace"/>
     </session-factory>
 
 </hibernate-configuration>

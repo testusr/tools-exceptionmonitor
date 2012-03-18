@@ -1,17 +1,32 @@
-package de.smeo.tools.exceptionmonitor.persistence;
+package de.smeo.tools.exceptionmonitor.domain;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionChain;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-public class FileExceptionContainer extends Identifiable {
+import de.smeo.tools.exceptionmonitor.persistence.Identifiable;
+
+@Entity
+@Table(name = "EMON_EXPCONTAINER")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class FileExceptionContainer extends Identifiable implements Serializable {
+	private static final long serialVersionUID = -8761095692865276022L;
+	
 	private String absFilePath;
+	
+	@OneToMany
 	private Set<ExceptionChain> exceptionChains = new HashSet<ExceptionChain>();
+	@OneToMany
 	private List<ExceptionOccuranceRecord> exceptions = new ArrayList<ExceptionOccuranceRecord>();
 	
 	public FileExceptionContainer(String absolutePath) {
@@ -19,7 +34,7 @@ public class FileExceptionContainer extends Identifiable {
 		this.absFilePath = absolutePath;
 	}
 	
-	public FileExceptionContainer() {}
+	private FileExceptionContainer() {}
 
 	public void addExceptionRecord(ExceptionOccuranceRecord exceptionRecord) {
 		exceptions.add(exceptionRecord);

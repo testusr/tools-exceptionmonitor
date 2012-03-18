@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.smeo.tools.exceptionmonitor.domain.Exception;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionChain;
+
 
 /**
  * Collect exceptions that are chained together by "cause by" and finally create an immutable

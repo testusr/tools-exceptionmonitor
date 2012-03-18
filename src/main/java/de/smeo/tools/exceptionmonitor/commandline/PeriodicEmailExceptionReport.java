@@ -10,7 +10,7 @@ import javax.mail.MessagingException;
 
 import de.smeo.tools.exceptionmonitor.common.EmailDispatcher;
 import de.smeo.tools.exceptionmonitor.common.FileMonitorStateRepository;
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionOccuranceRecord;
 import de.smeo.tools.exceptionmonitor.monitor.SingleFileMonitor;
 import de.smeo.tools.exceptionmonitor.persistence.ExceptionDatabase;
 import de.smeo.tools.exceptionmonitor.persistence.ExceptionDatabase.CategorizedExceptions;

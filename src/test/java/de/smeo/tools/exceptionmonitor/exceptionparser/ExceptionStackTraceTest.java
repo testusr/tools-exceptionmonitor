@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionStackTrace;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionStackTrace;
 
 public class ExceptionStackTraceTest {
 	private final String STACK_TRACE_SAMPLE = "at sun.reflect.GeneratedMethodAccessor80.invoke(Unknown Source)\n" + 

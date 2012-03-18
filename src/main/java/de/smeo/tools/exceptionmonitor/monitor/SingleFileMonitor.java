@@ -5,7 +5,7 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.List;
 
-import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionOccuranceRecord;
+import de.smeo.tools.exceptionmonitor.domain.ExceptionOccuranceRecord;
 import de.smeo.tools.exceptionmonitor.exceptionparser.ExceptionParser;
 
 /**

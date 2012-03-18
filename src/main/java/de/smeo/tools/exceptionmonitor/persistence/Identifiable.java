@@ -1,6 +1,16 @@
 package de.smeo.tools.exceptionmonitor.persistence;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
+@Access(AccessType.FIELD)
 public class Identifiable {
+	@Id
+//	@GeneratedValue(generator = "native")
 	private String id;
 
 	

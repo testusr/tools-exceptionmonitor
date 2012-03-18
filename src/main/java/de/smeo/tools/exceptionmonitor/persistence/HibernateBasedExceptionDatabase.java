@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.hibernate.Session;
 
+import de.smeo.tools.exceptionmonitor.domain.FileExceptionContainer;
+
 public class HibernateBasedExceptionDatabase extends ExceptionDatabase {
 
 	@Override
@@ -11,7 +13,7 @@ public class HibernateBasedExceptionDatabase extends ExceptionDatabase {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         for (FileExceptionContainer currFileExceptionContainer : exceptionDataBase){
-        	session.save(currFileExceptionContainer);
+        	session.saveOrUpdate(currFileExceptionContainer);
         }
 
         session.getTransaction().commit();
